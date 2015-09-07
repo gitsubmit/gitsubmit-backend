@@ -1,6 +1,6 @@
 from flask.templating import render_template
 
-__authors__ = ["shawkins", "Tsintsir", "sonph"]  # add yourself!
+__authors__ = ["shawkins", "Tsintsir", "sonph", "LeBat]  # add yourself!
 
 # internal (project libs)
 from config import PORT_NUM
