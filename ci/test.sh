@@ -8,8 +8,9 @@ else
     # This is probably being run locally by shawkins
     . /virtualenvs/gitsubmit_env/bin/activate
 fi
+pip install -r requirements.txt
 
-python src/app.py -p 5123 &
+python src/app.py -p 5555 &
 sleep 3 # let tornado warm up
 cd test
 
