@@ -8,6 +8,7 @@ Test Teardown     Close Browser
 
 *** Test Cases ***
 Valid Login
+    [Tags]  not_implemented
     Given browser is opened to login page
     When user "demo" logs in with password "mode"
     Then welcome page should be open

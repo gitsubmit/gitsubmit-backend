@@ -14,5 +14,5 @@ python src/app.py -p 5123 &
 sleep 3 # let tornado warm up
 cd test
 
-python -m robot.run .
+python -m robot.run --noncritical not_implemented .
 killall python
