@@ -10,9 +10,11 @@ else
 fi
 pip install -r requirements.txt
 
+# start a testing server on port 5555
 python src/app.py -p 5555 &
 sleep 3 # let tornado warm up
-cd test
 
-python -m robot.run --noncritical not_implemented .
+cd test
+# Run tests with an X virtual frame buffer
+xvfb-run python -m robot.run --noncritical not_implemented .
 killall python
