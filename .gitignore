@@ -41,6 +41,10 @@ htmlcov/
 .cache
 nosetests.xml
 coverage.xml
+# robotframework
+output.xml
+log.html
+report.html
 *,cover
 
 # Translations
