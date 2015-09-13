@@ -1,0 +1,3 @@
+[submodule "html_templates/materialize"]
+	path = html_templates/materialize
+	url = git://github.com/dogfalo/materialize.git
