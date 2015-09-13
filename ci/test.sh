@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-killall python # in case any processes were left dangling
 set -e # exit with non-zero exit codes immediately
 if [ "$local_instance" = "yes" ]; then
     # this is on a server
@@ -10,9 +9,13 @@ else
 fi
 pip install -r requirements.txt
 
+# start a testing server on port 5555
 python src/app.py -p 5555 &
-sleep 3 # let tornado warm up
-cd test
 
-python -m robot.run --noncritical not_implemented .
-killall python
+TESTSERVERPID=$!
+sleep 3 # let tornado warm up
+
+cd test
+# Run tests with an X virtual frame buffer
+xvfb-run python -m robot.run --noncritical not_implemented .
+kill $TESTSERVERPID
