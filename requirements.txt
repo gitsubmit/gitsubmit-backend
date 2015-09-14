@@ -1,6 +1,7 @@
 # application
 tornado
 flask
+pbkdf2
 pymongo
 # testing
 selenium
