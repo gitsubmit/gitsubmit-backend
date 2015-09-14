@@ -23,6 +23,10 @@ def hello_world():
 def hello_var(var):
     return render_template("hello_var.html", var=var)
 
+@app.errorhandler(404)
+def not_found(e):
+    return render_template("404.html")
+
 if __name__ == '__main__':
     # Parse arguments
     args = arg_parser.parse_args()
