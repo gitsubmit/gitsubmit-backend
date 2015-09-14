@@ -1,4 +1,4 @@
-__author__ = 'tsirist'
+__author__ = 'Tsintsir'
 
 from bson import Binary
 from os import urandom
