@@ -4,7 +4,10 @@ __authors__ = ["shawkins", "Tsintsir", "sonph", "LeBat"]  # add yourself!
 
 # internal (project libs)
 from config import PORT_NUM, arg_parser
+
 # base (python packages)
+import sys
+
 # external (pip packages)
 from flask import Flask
 import tornado.wsgi
@@ -34,6 +37,8 @@ if __name__ == '__main__':
     wsgi_container = tornado.wsgi.WSGIContainer(app)
     http_server = tornado.httpserver.HTTPServer(wsgi_container)
     http_server.listen(PORT_NUM)
+
+    sys.stderr.write('Listening on port %d\n' % PORT_NUM)
 
     # this blocks the thread, don't do anything after this!
     tornado.ioloop.IOLoop.instance().start()
