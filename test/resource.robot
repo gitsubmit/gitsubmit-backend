@@ -10,7 +10,7 @@ Library           Selenium2Library
 
 *** Variables ***
 ${SERVER}         gitsubmit.com:5555
-${BROWSER}        Chrome
+${BROWSER}        Firefox
 ${DELAY}          0
 ${VALID USER}     demo
 ${VALID PASSWORD}    pass
