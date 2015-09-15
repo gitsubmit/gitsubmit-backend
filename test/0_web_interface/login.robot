@@ -1,18 +1,10 @@
 *** Settings ***
 Documentation     A test suite with a single Gherkin style test.
-...
-...               This test is functionally identical to the example in
-...               valid_login.robot file.
-Resource          ../resource.robot
+Resource          ../resources/resource.robot
+Library           ../libraries/SmokeLib.py
 Test Teardown     Close Browser
 
 *** Test Cases ***
-Test Webserver Is Alive
-    [Tags]  smoke_test
-    Given browser is opened to landing page
-    Then landing page should be open
-    # redundancy for gherkin style
-
 Page Is Responsive
     [Tags]  not_implemented
     Given browser is opened to landing page

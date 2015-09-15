@@ -9,7 +9,7 @@ Documentation     A resource file with reusable keywords and variables.
 Library           Selenium2Library
 
 *** Variables ***
-${SERVER}         gitsubmit.com:5555
+${SERVER}         localhost:5555
 ${BROWSER}        Chrome
 ${DELAY}          0
 ${VALID USER}     demo
