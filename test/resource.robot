@@ -10,7 +10,7 @@ Library           Selenium2Library
 
 *** Variables ***
 ${SERVER}         gitsubmit.com:5555
-${BROWSER}        Firefox
+${BROWSER}        Chrome
 ${DELAY}          0
 ${VALID USER}     demo
 ${VALID PASSWORD}    pass
@@ -20,8 +20,13 @@ ${ERROR URL}      http://${SERVER}/error
 
 *** Keywords ***
 Open Browser To Login Page
-    Open Browser    ${LOGIN URL}    ${BROWSER}
-    Maximize Browser Window
+    Open Browser To URL    ${LOGIN URL}
+    Login Page Should Be Open
+
+Open Browser To URL
+    [Arguments]  ${URL}
+    Open Browser    ${URL}    ${BROWSER}
+    set window size    1920    1080
     Set Selenium Speed    ${DELAY}
     Login Page Should Be Open
 
