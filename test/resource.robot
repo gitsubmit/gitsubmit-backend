@@ -14,11 +14,16 @@ ${BROWSER}        Chrome
 ${DELAY}          0
 ${VALID USER}     demo
 ${VALID PASSWORD}    pass
+${ROOT_URL}         http://${SERVER}/
 ${LOGIN URL}      http://${SERVER}/login
 ${DASHBOARD URL}    http://${SERVER}/dash
 ${ERROR URL}      http://${SERVER}/error
 
 *** Keywords ***
+Open Browser To Landing Page
+    Open Browser To URL     ${ROOT_URL}
+    Landing Page Should Be Open
+
 Open Browser To Login Page
     Open Browser To URL    ${LOGIN URL}
     Login Page Should Be Open
@@ -28,10 +33,12 @@ Open Browser To URL
     Open Browser    ${URL}    ${BROWSER}
     set window size    1920    1080
     Set Selenium Speed    ${DELAY}
-    Login Page Should Be Open
 
 Login Page Should Be Open
-    Title Should Be    GitSubmit - Login
+    Title Should Be    Login - GitSubmit
+
+Landing Page Should Be Open
+    Title Should Be    Welcome - GitSubmit
 
 Go To Login Page
     Go To    ${LOGIN URL}
