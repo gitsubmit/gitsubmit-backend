@@ -29,6 +29,6 @@ def login(username, password):
     else:
         salt = user_doc["salt"]
         if b2a_hex(PBKDF2(password, salt).read(256)) == user_doc["hash"]:
-            return 1
+            return True
         else:
             raise StandardError("Incorrect password.")
