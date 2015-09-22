@@ -3,6 +3,7 @@ tornado
 flask
 pbkdf2
 pymongo
+requests
 # testing
 selenium
 robotframework
