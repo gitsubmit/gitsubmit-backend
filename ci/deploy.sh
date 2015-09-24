@@ -8,7 +8,8 @@ git submodule init
 git submodule update
 git submodule status
 pip install -r requirements.txt # get python packages
-cd /srv/logs
-nohup python /srv/gitsubmit/src/app.py &
+cd src
+nohup /virtualenvs/gitsubmit_env/bin/gunicorn --access-logfile /srv/logs/access.log -w 10 -b :80 app:app &
+# -w = number workers, -b = socket to bind (blank ip = broadcast, 0.0.0.0, port = 80)
 sleep 3
 curl http://gitsubmit.com/
