@@ -25,10 +25,10 @@ def login(username, password):
     db = client.gitsubmit.users
     user_doc = db.find_one({"username": username})
     if user_doc is None:
-        raise LookupError("No such username could be found.")
+        return False
     else:
         salt = user_doc["salt"]
         if b2a_hex(PBKDF2(password, salt).read(256)) == user_doc["hash"]:
             return True
         else:
-            raise StandardError("Incorrect password.")
+            return False
