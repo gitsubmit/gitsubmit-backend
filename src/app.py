@@ -21,6 +21,10 @@ app = Flask(__name__)
 def hello_world():
     return render_template("index.html")
 
+@app.route('/about')
+def about():
+    return render_template("about.html")
+
 
 @app.route('/my_var=<var>/')
 def hello_var(var):
