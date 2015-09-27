@@ -2,6 +2,7 @@
 gunicorn
 flask
 pymongo
+pyolite
 requests
 # testing
 selenium
