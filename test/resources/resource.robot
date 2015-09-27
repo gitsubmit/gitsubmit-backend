@@ -65,12 +65,14 @@ HTTP Status Of Get URL Should Be
     [Arguments]  ${URL}   ${CODE}
     ${request}=     get url    ${URL}
     ${return_code}=    get http status from request    ${request}
+    ${return_content}=    get http content from request    ${request}
     should be equal as integers  ${CODE}  ${return_code}
 
 HTTP Status Of Post URL Should Be
     [Arguments]  ${URL}    ${PAYLOAD}    ${CODE}
     ${request}=     post to url    ${URL}    ${PAYLOAD}
     ${return_code}=    get http status from request    ${request}
+    ${return_content}=    get http content from request    ${request}
     should be equal as integers  ${CODE}  ${return_code}
 
 
@@ -78,6 +80,7 @@ HTTP Status Of Delete URL Should Be
     [Arguments]  ${URL}    ${CODE}
     ${request}=     delete url    ${URL}
     ${return_code}=    get http status from request    ${request}
+    ${return_content}=    get http content from request    ${request}
     should be equal as integers  ${CODE}  ${return_code}
 
 testing webserver is running
