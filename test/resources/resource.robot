@@ -69,7 +69,7 @@ HTTP Status Of Get URL Should Be
 
 HTTP Status Of Post URL Should Be
     [Arguments]  ${URL}    ${PAYLOAD}    ${CODE}
-    ${request}=     post url    ${URL}    ${PAYLOAD}
+    ${request}=     post to url    ${URL}    ${PAYLOAD}
     ${return_code}=    get http status from request    ${request}
     should be equal as integers  ${CODE}  ${return_code}
 
