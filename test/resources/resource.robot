@@ -15,7 +15,7 @@ ${BROWSER}        Chrome
 ${DELAY}          0
 ${VALID USER}     demo
 ${VALID PASSWORD}    pass
-${ROOT_URL}         http://${SERVER}/
+${ROOT_URL}         http://${SERVER}
 ${LOGIN URL}      http://${SERVER}/login
 ${DASHBOARD URL}    http://${SERVER}/dash
 ${ERROR URL}      http://${SERVER}/error
@@ -63,20 +63,20 @@ Welcome Page Should Be Open
 
 HTTP Status Of Get URL Should Be
     [Arguments]  ${URL}   ${CODE}
-    ${request}=     get url    ${ROOT_URL}
+    ${request}=     get url    ${URL}
     ${return_code}=    get http status from request    ${request}
     should be equal as integers  ${CODE}  ${return_code}
 
 HTTP Status Of Post URL Should Be
     [Arguments]  ${URL}    ${PAYLOAD}    ${CODE}
-    ${request}=     post url    ${ROOT_URL}    ${PAYLOAD}
+    ${request}=     post url    ${URL}    ${PAYLOAD}
     ${return_code}=    get http status from request    ${request}
     should be equal as integers  ${CODE}  ${return_code}
 
 
 HTTP Status Of Delete URL Should Be
     [Arguments]  ${URL}    ${CODE}
-    ${request}=     delete url    ${ROOT_URL}
+    ${request}=     delete url    ${URL}
     ${return_code}=    get http status from request    ${request}
     should be equal as integers  ${CODE}  ${return_code}
 
