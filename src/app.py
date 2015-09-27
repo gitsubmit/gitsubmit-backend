@@ -2,7 +2,7 @@ __authors__ = ["shawkins", "Tsintsir", "sonph", "LeBat"]  # add yourself!
 
 # internal (project libs)
 from config import GITOLITE_ADMIN_PATH
-from gitolite import GitoliteWrapper, InvalidPubKeyException, UserDoesNotExistException, KeyDoesNotExistException, \
+from gitolite import GitoliteWrapper, UserDoesNotExistException, KeyDoesNotExistException, \
     CannotDeleteOnlyKeyException
 
 # base (python packages)
@@ -10,6 +10,7 @@ from gitolite import GitoliteWrapper, InvalidPubKeyException, UserDoesNotExistEx
 # external (pip packages)
 from flask import Flask, jsonify
 from flask import request
+from sshpubkeys import InvalidKeyException
 
 app = Flask(__name__)
 app.debug = True  # TODO: unset this after release!
@@ -44,7 +45,7 @@ def post_new_ssh_key(username):
 
     try:
         gw.add_pkey_to_user(username, pkey_contents)
-    except InvalidPubKeyException as e:
+    except InvalidKeyException as e:
         return jsonify({"error": "Public key was invalid format", "exception": str(e)}), 400
     except UserDoesNotExistException as e:
         return jsonify({"error": "username not found!", "exception": str(e)}), 404

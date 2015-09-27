@@ -1,12 +1,13 @@
 import hashlib
 from config import GITOLITE_ADMIN_PATH
 from pyolite import Pyolite
+import sshpubkeys
+from sshpubkeys import InvalidKeyException
 
 __author__ = 'shawkins'
 
 
 # Exceptions
-class InvalidPubKeyException(Exception): pass
 class UserDoesNotExistException(Exception): pass
 class KeyDoesNotExistException(Exception): pass
 class CannotDeleteOnlyKeyException(Exception): pass
@@ -17,7 +18,10 @@ def validate_pkey_or_error(key):
     try:
         hashlib.md5(key.strip().split()[1]).hexdigest()
     except IndexError:
-        raise InvalidPubKeyException(str(key) + " is not a valid public key!")
+        raise InvalidKeyException(str(key) + " is not a valid public key!")
+    # Now that we've verified that it CAN be hexdigested, let's validate with sshpubkeys
+    # this will raise an InvalidKeyException if the key is... invalid
+    sshpubkeys.SSHKey(key.strip())
 
 
 def hexify_public_key_from_path(pubkey_path):
@@ -27,7 +31,6 @@ def hexify_public_key_from_path(pubkey_path):
 
 
 def hexify_public_key_string(pubkey_string):
-    validate_pkey_or_error(pubkey_string)
     # This comes from pyolite, very elegant:
     # https://github.com/PressLabs/pyolite/blob/master/pyolite/models/lists/keys.py#L22
     return hashlib.md5(pubkey_string.strip().split()[1]).hexdigest()
