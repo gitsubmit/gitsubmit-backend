@@ -17,21 +17,23 @@ Can add an SSH key to an existing user
     ${payload}=    create dictionary    pkey_contents    ${pkey_contents}
     HTTP Status Of Post URL Should Be    ${ROOT_URL}/${TEST_USERNAME}/ssh_keys/    ${payload}    200
     ${keylist_length_after_insert}=    get number of keys associated with user  ${TEST_USERNAME}
-    should be equal as integers    ${keylist_length_after_insert}    ${$initial_keylist_length} + 1
+    ${expected_length}=    evaluate    ${$initial_keylist_length} + 1
+    should be equal as integers    ${keylist_length_after_insert}    ${expected_length}
 
 
 Cannot add an SSH key to user if it already exists
     # TODO: auth here
     ${$initial_keylist_length}=   get number of keys associated with user  ${TEST_USERNAME}
     ${key_dict}=    create bogus key
-    ${pkey_contents}=    get from dictionary    pubkey_contents
+    ${pkey_contents}=    get from dictionary    ${key_dict}    pubkey_contents
     ${payload}=    create dictionary    pkey_contents    ${pkey_contents}
     # First time should be fine
     HTTP Status Of Post URL Should Be    ${ROOT_URL}/${TEST_USERNAME}/ssh_keys/    ${payload}    200
     # Second time should get an error
     HTTP Status Of Post URL Should Be    ${ROOT_URL}/${TEST_USERNAME}/ssh_keys/    ${payload}    400
     ${keylist_length_after_insert}=    get number of keys associated with user  ${TEST_USERNAME}
-    should be equal as integers    ${keylist_length_after_insert}    ${$initial_keylist_length} + 1
+    ${expected_length}=    evaluate    ${$initial_keylist_length} + 1
+    should be equal as integers    ${keylist_length_after_insert}    ${expected_length}
 
 Cannot add an invalid SSH key to user
     ${$initial_keylist_length}=   get number of keys associated with user  ${TEST_USERNAME}
