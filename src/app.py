@@ -9,7 +9,7 @@ from config import PORT_NUM, arg_parser
 import sys
 
 # external (pip packages)
-from flask import Flask
+from flask import Flask, jsonify
 import tornado.wsgi
 import tornado.httpserver
 import tornado.ioloop
@@ -19,14 +19,5 @@ app = Flask(__name__)
 
 @app.route('/')
 def hello_world():
-    return render_template("index.html")
-
-
-@app.route('/my_var=<var>/')
-def hello_var(var):
-    return render_template("hello_var.html", var=var)
-
-@app.errorhandler(404)
-def not_found(e):
-    return render_template("404.html")
+    return jsonify({"hello": "world"})
 
