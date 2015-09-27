@@ -77,8 +77,8 @@ HTTP Status Of Post URL Should Be
 
 
 HTTP Status Of Delete URL Should Be
-    [Arguments]  ${URL}    ${CODE}
-    ${request}=     delete url    ${URL}
+    [Arguments]  ${URL}    ${PAYLOAD}    ${CODE}
+    ${request}=     delete url    ${URL}    ${PAYLOAD}
     ${return_code}=    get http status from request    ${request}
     ${return_content}=    get http content from request    ${request}
     should be equal as integers  ${CODE}  ${return_code}

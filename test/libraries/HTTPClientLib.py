@@ -21,5 +21,5 @@ class HTTPClientLib(object):
     def post_to_url(self, url, data):
         return requests.post(url, data)
 
-    def delete_url(self, url):
-        return requests.delete(url)
+    def delete_url(self, url, data=None):
+        return requests.delete(url, data=data)
