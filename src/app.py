@@ -30,19 +30,3 @@ def hello_var(var):
 def not_found(e):
     return render_template("404.html")
 
-if __name__ == '__main__':
-    # Parse arguments
-    args = arg_parser.parse_args()
-    # If we got a port_num config from args, override with that
-    if args.port_num is not None:
-        PORT_NUM = args.port_num
-    PORT_NUM = int(PORT_NUM)
-    # set up WSGI/tornado magic
-    wsgi_container = tornado.wsgi.WSGIContainer(app)
-    http_server = tornado.httpserver.HTTPServer(wsgi_container)
-    http_server.listen(PORT_NUM)
-
-    sys.stderr.write('Listening on port %d\n' % PORT_NUM)
-
-    # this blocks the thread, don't do anything after this!
-    tornado.ioloop.IOLoop.instance().start()

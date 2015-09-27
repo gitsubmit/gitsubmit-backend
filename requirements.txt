@@ -1,5 +1,5 @@
 # application
-tornado
+gunicorn
 flask
 pymongo
 requests
