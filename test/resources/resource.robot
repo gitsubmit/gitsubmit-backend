@@ -87,3 +87,7 @@ testing webserver is running
     no operation
     # this is a test prereq but
     # lol gherkin
+
+the test user is authenticated
+    no operation
+    # TODO: this
