@@ -3,7 +3,7 @@ __authors__ = ["shawkins", "Tsintsir", "sonph", "LeBat"]  # add yourself!
 # internal (project libs)
 from config import GITOLITE_ADMIN_PATH
 from gitolite import GitoliteWrapper, UserDoesNotExistException, KeyDoesNotExistException, \
-    CannotDeleteOnlyKeyException
+    CannotDeleteOnlyKeyException, KeyAlreadyExistsException
 
 # base (python packages)
 
@@ -44,13 +44,14 @@ def post_new_ssh_key(username):
         return jsonify({"error": "No key was given!"}), 400
 
     try:
-        gw.add_pkey_to_user(username, pkey_contents)
+        pretty_key_hex = gw.add_pkey_to_user(username, pkey_contents)
+        return jsonify(key_added=pretty_key_hex)
     except InvalidKeyException as e:
         return jsonify({"error": "Public key was invalid format", "exception": str(e)}), 400
+    except KeyAlreadyExistsException as e:
+        return jsonify({"error": "Public key already exists", "exception": str(e)}), 400
     except UserDoesNotExistException as e:
         return jsonify({"error": "username not found!", "exception": str(e)}), 404
-
-    return list_ssh_keys(username)
 
 
 @app.route('/<username>/ssh_keys/', methods=['DELETE'])

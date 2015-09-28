@@ -10,6 +10,7 @@ __author__ = 'shawkins'
 # Exceptions
 class UserDoesNotExistException(Exception): pass
 class KeyDoesNotExistException(Exception): pass
+class KeyAlreadyExistsException(Exception): pass
 class CannotDeleteOnlyKeyException(Exception): pass
 
 
@@ -54,13 +55,18 @@ class GitoliteWrapper(object):
         return self.olite.users.get(username)
 
     def add_pkey_to_user(self, username, pkey):
+        validate_pkey_or_error(pkey)
+        key_hex = hexify_public_key_string(pkey)
+        pretty_key_hex = add_colons_to_hash(key_hex)
         if not self.user_exists(username):
-            validate_pkey_or_error(pkey)
             self.olite.users.create(username, key=pkey)
+            return pretty_key_hex
         else:
             u = self.olite.users.get(username)
-            validate_pkey_or_error(pkey)
+            if pretty_key_hex in self.get_list_of_pretty_key_strings(username):
+                raise KeyAlreadyExistsException(str(pkey) + " already exists for user "+str(username))
             u.keys.append(pkey)
+            return pretty_key_hex
 
     def get_list_of_key_strings(self, username):
         user = self.get_user_or_error(username)
