@@ -8,10 +8,10 @@ __author__ = 'shawkins'
 
 
 # Exceptions
-class UserDoesNotExistException(Exception): pass
-class KeyDoesNotExistException(Exception): pass
-class KeyAlreadyExistsException(Exception): pass
-class CannotDeleteOnlyKeyException(Exception): pass
+class UserDoesNotExistError(Exception): pass
+class KeyDoesNotExistError(Exception): pass
+class KeyAlreadyExistsError(Exception): pass
+class CannotDeleteOnlyKeyError(Exception): pass
 
 
 # static functions
@@ -51,7 +51,7 @@ class GitoliteWrapper(object):
 
     def get_user_or_error(self, username):
         if not self.user_exists(username):
-            raise UserDoesNotExistException(str(username) + " does not exist in gitolite!")
+            raise UserDoesNotExistError(str(username) + " does not exist in gitolite!")
         return self.olite.users.get(username)
 
     def add_pkey_to_user(self, username, pkey):
@@ -64,7 +64,7 @@ class GitoliteWrapper(object):
         else:
             u = self.olite.users.get(username)
             if pretty_key_hex in self.get_list_of_pretty_key_strings(username):
-                raise KeyAlreadyExistsException(str(pkey) + " already exists for user "+str(username))
+                raise KeyAlreadyExistsError(str(pkey) + " already exists for user "+str(username))
             u.keys.append(pkey)
             return pretty_key_hex
 
@@ -80,9 +80,9 @@ class GitoliteWrapper(object):
     def remove_key_from_user_by_pretty_string(self, username, pretty_string):
         user = self.get_user_or_error(username)
         if len(user.keys) < 2:
-            raise CannotDeleteOnlyKeyException(str(pretty_string) + " is the only key!")
+            raise CannotDeleteOnlyKeyError(str(pretty_string) + " is the only key!")
         if pretty_string not in self.get_list_of_pretty_key_strings(username):
-            raise KeyDoesNotExistException(str(pretty_string) + " does not exist for user "+str(username))
+            raise KeyDoesNotExistError(str(pretty_string) + " does not exist for user "+str(username))
         for key_path in user.keys:
             pretty_key = add_colons_to_hash(hexify_public_key_from_path(key_path))
             if pretty_string == pretty_key:

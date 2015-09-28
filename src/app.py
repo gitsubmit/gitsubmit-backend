@@ -2,8 +2,8 @@ __authors__ = ["shawkins", "Tsintsir", "sonph", "LeBat"]  # add yourself!
 
 # internal (project libs)
 from config import GITOLITE_ADMIN_PATH
-from gitolite import GitoliteWrapper, UserDoesNotExistException, KeyDoesNotExistException, \
-    CannotDeleteOnlyKeyException, KeyAlreadyExistsException
+from gitolite import GitoliteWrapper, UserDoesNotExistError, KeyDoesNotExistError, \
+    CannotDeleteOnlyKeyError, KeyAlreadyExistsError
 
 # base (python packages)
 
@@ -48,9 +48,9 @@ def post_new_ssh_key(username):
         return jsonify(key_added=pretty_key_hex)
     except InvalidKeyException as e:
         return jsonify({"error": "Public key was invalid format", "exception": str(e)}), 400
-    except KeyAlreadyExistsException as e:
+    except KeyAlreadyExistsError as e:
         return jsonify({"error": "Public key already exists", "exception": str(e)}), 400
-    except UserDoesNotExistException as e:
+    except UserDoesNotExistError as e:
         return jsonify({"error": "username not found!", "exception": str(e)}), 404
 
 
@@ -64,9 +64,9 @@ def remove_key_from_user(username):
 
     try:
         result = gw.remove_key_from_user_by_pretty_string(username, pkey)
-    except KeyDoesNotExistException as e:
+    except KeyDoesNotExistError as e:
         return jsonify({"error": "Key does not exist for user!", "exception": str(e)}), 404
-    except CannotDeleteOnlyKeyException as e:
+    except CannotDeleteOnlyKeyError as e:
         return jsonify({"error": "Can't delete the only key on the account!", "exception": str(e)}), 400
     if not result:
         return jsonify({"error": "Key was not found under user!", "exception": None}), 404
