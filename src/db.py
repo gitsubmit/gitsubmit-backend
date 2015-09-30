@@ -6,9 +6,19 @@ from pymongo import MongoClient
 from pbkdf2 import PBKDF2
 
 
+class UsernameAlreadyTakenError(Exception): pass
+class EmailAlreadyTakenError(Exception): pass
+
+
 def create_user(username, email, password):
     client = MongoClient()
     db = client.gitsubmit.users
+    username_check_doc = db.find_one({"username": username})
+    if username_check_doc is not None:
+        raise UsernameAlreadyTakenError("That username is already taken.");
+    email_check_doc = db.find_one({"email": email})
+    if email_check_doc is not None:
+        raise EmailAlreadyTakenError("That email address is already taken.");
     salt = urandom(256)
     db.insert_one(
         {
