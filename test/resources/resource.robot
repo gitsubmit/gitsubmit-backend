@@ -16,10 +16,10 @@ ${DELAY}          0
 ${VALID USER}     demo
 ${VALID PASSWORD}    demopass
 ${ROOT_URL}         http://${SERVER}/
-${LOGIN URL}      http://${SERVER}/login
+${LOGIN URL}        http://${SERVER}/login
 ${DASHBOARD URL}    http://${SERVER}/dash
-${ERROR URL}      http://${SERVER}/error
-${SIGNUP URL} http://${SERVER}/signup
+${ERROR URL}        http://${SERVER}/error
+${SIGNUP URL}       http://${SERVER}/signup
 ${TEST_USERNAME}    test_user
 
 *** Keywords ***
