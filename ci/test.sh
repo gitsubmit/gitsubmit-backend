@@ -9,13 +9,15 @@ else
 fi
 pip install -r requirements.txt
 
+cd src
 # start a testing server on port 5555
-python src/app.py -p 5555 &
+/virtualenvs/gitsubmit_env/bin/gunicorn --access-logfile /srv/logs/staging_access.log -w 1 -b :5555 app:app &
 
 TESTSERVERPID=$!
-sleep 3 # let tornado warm up
+echo $TESTSERVERPID > ../staging_pid
+sleep 3 # let gunicorn warm up
 
-cd test
+cd ../test
 # Run tests with an X virtual frame buffer
 xvfb-run --server-args="-screen 0, 1920x1080x24" python -m robot.run --noncritical not_implemented .
 kill $TESTSERVERPID

@@ -1,9 +1,11 @@
 # application
-tornado
+gunicorn
 flask
 pbkdf2
 pymongo
+pyolite
 requests
+sshpubkeys
 # testing
 selenium
 robotframework
