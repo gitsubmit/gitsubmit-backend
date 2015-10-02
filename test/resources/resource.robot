@@ -14,11 +14,12 @@ ${SERVER}         localhost:5555
 ${BROWSER}        Chrome
 ${DELAY}          0
 ${VALID USER}     demo
-${VALID PASSWORD}    pass
-${ROOT_URL}         http://${SERVER}
+${VALID PASSWORD}    demopass
+${ROOT_URL}         http://${SERVER}/
 ${LOGIN URL}      http://${SERVER}/login
 ${DASHBOARD URL}    http://${SERVER}/dash
 ${ERROR URL}      http://${SERVER}/error
+${SIGNUP URL} http://${SERVER}/signup
 ${TEST_USERNAME}    test_user
 
 *** Keywords ***
@@ -29,6 +30,10 @@ Open Browser To Landing Page
 Open Browser To Login Page
     Open Browser To URL    ${LOGIN URL}
     Login Page Should Be Open
+
+Open Browser To Signup Page
+    Open Browser To URL    ${SIGNUP URL}
+    Signup Page Should Be Open
 
 Open Browser To URL
     [Arguments]  ${URL}
@@ -54,12 +59,19 @@ Input Password
     [Arguments]    ${password}
     Input Text    password_field    ${password}
 
+Input Email
+    [Arguments]    ${email}
+    Input Text    email_field    ${email}
+
 Submit Credentials
     Click Button    login_button
 
+Submit Signup
+    Click Button    signup_button
+
 Welcome Page Should Be Open
-    Location Should Be    ${DASHBOARD URL}
-    Title Should Be    GitSubmit - Dashboard
+    Location Should Be    ${SIGNUP URL}
+    Title Should Be    GitSubmit - Sign Up
 
 HTTP Status Of Get URL Should Be
     [Arguments]  ${URL}   ${CODE}
@@ -91,3 +103,4 @@ testing webserver is running
 the test user is authenticated
     no operation
     # TODO: this
+
