@@ -4,6 +4,7 @@ from binascii import b2a_hex
 from os import urandom
 from pymongo import MongoClient
 from pbkdf2 import PBKDF2
+import subprocess
 
 
 
@@ -120,14 +121,15 @@ def create_submission(url_name, long_name, parent_project_url, owner):
     :param url_name: The urlname given by the user. Do not include /'es or username!
     """
     # Form the git clone url (see functional requirements)
-    gitolite_url = owner + "/submissions/" + url_name
+    submission_full_git_url = owner + "/submissions/" + url_name
 
     client = MongoClient()
     submission_db = client.gitsubmit.submissions
     project_db = client.gitsubmit.projects
+    class_db = client.gitsubmit.classes
 
     # Make sure the url_name is unique
-    shortname_check_doc = submission_db.find_one({"gitolite_url": gitolite_url})
+    shortname_check_doc = submission_db.find_one({"gitolite_url": submission_full_git_url})
     if shortname_check_doc is not None:
         raise UrlNameAlreadyTakenError("That url name is already taken.")
 
@@ -135,15 +137,26 @@ def create_submission(url_name, long_name, parent_project_url, owner):
     parent_project_obj = project_db.find_one({"url_name": parent_project_url})
     if parent_project_obj is None:
         raise ProjectDoesNotExistError(str(parent_project_url))
+    parent_class_obj = class_db.find_one({"url_name": parent_project_obj["parent"]})
+    if parent_class_obj is None:
+        raise ClassDoesNotExistError(str(parent_project_obj["parent"]))
+    parent_class_url = parent_class_obj
+
 
     gw = GitoliteWrapper(GITOLITE_ADMIN_PATH)
     # Make sure the owner exists
     gw.get_user_or_error(owner)
-    
-    # TODO: This is not a fork, need a good (fast) way to fork parent repo
-    gw.create_repo(gitolite_url, owner)
 
-    submission_obj = {"gitolite_url": gitolite_url,
+    # Note: create_repo sets the repo ACCESS rights in gitolite
+    gw.create_repo(submission_full_git_url, owner)
+
+    # This is what actually causes the fork, though
+    parent_project_full_git_url = parent_class_url + "/" + parent_project_url
+    fork_callstring = "ssh git@localhost fork " + parent_project_full_git_url + " " + submission_full_git_url
+    subprocess.call(fork_callstring, shell=True)
+
+    # If we got here, nothing went wrong, stuff it in the db
+    submission_obj = {"gitolite_url": submission_full_git_url,
                       "long_name": long_name,
                       "owner": owner,
                       "parent": parent_project_url,
