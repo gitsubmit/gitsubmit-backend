@@ -115,10 +115,13 @@ class GitoliteWrapper(object):
         user = self.get_user_or_error(username)
         repo = self.get_repo_or_error(reponame)
 
-        if user.name in repo.users:
-            repo.users.edit(user.name, "R+")
-        else:
-            repo.users.add(user.name, "R+")
+        try:
+            # This is dumb but gitolite doesn't support iterating over users associated with a repo, so we have to use
+            # their bad control scheme
+            # See: https://github.com/PressLabs/pyolite/blob/master/pyolite/models/lists/users.py#L31
+            repo.users.add(user.name, "R")
+        except ValueError as e:
+            repo.users.edit(user.name, "R")
 
     def give_user_readwrite_permission(self, username, reponame):
         user = self.get_user_or_error(username)
@@ -135,6 +138,5 @@ class GitoliteWrapper(object):
     def revoke_all_user_permissions(self, username, reponame):
         user = self.get_user_or_error(username)
         repo = self.get_repo_or_error(reponame)
-        if user.name not in repo.users:
-            return
+        # note: nothing at all happens here if the user is not already in the repo access list
         repo.users.remove(user.name)
