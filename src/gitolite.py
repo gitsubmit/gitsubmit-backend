@@ -9,8 +9,10 @@ __author__ = 'shawkins'
 
 # Exceptions
 class UserDoesNotExistError(Exception): pass
+class RepoDoesNotExistError(Exception): pass
 class KeyDoesNotExistError(Exception): pass
 class KeyAlreadyExistsError(Exception): pass
+class RepoAlreadyExistsError(Exception): pass
 class CannotDeleteOnlyKeyError(Exception): pass
 
 
@@ -93,3 +95,48 @@ class GitoliteWrapper(object):
                 return True
         return False
 
+    def repo_exists(self, reponame):
+        return self.olite.repos.get(reponame) is not None
+
+    def get_repo_or_error(self, reponame):
+        if not self.repo_exists(reponame):
+            raise RepoDoesNotExistError(str(reponame) + " does not exist in gitolite!")
+        return self.olite.repos.get(reponame)
+
+    def create_repo(self, reponame, owner):
+        user = self.get_user_or_error(owner)
+        if self.repo_exists(reponame):
+            raise RepoAlreadyExistsError(str(reponame) + " already exists!")
+        repo = self.olite.repos.create(reponame)
+        repo.users.add(user.name, "RW+")
+        return repo
+
+    def give_user_readonly_permission(self, username, reponame):
+        user = self.get_user_or_error(username)
+        repo = self.get_repo_or_error(reponame)
+
+        try:
+            # This is dumb but gitolite doesn't support iterating over users associated with a repo, so we have to use
+            # their bad control scheme
+            # See: https://github.com/PressLabs/pyolite/blob/master/pyolite/models/lists/users.py#L31
+            repo.users.add(user.name, "R")
+        except ValueError as e:
+            repo.users.edit(user.name, "R")
+
+    def give_user_readwrite_permission(self, username, reponame):
+        user = self.get_user_or_error(username)
+        repo = self.get_repo_or_error(reponame)
+
+        try:
+            # This is dumb but gitolite doesn't support iterating over users associated with a repo, so we have to use
+            # their bad control scheme
+            # See: https://github.com/PressLabs/pyolite/blob/master/pyolite/models/lists/users.py#L31
+            repo.users.add(user.name, "RW+")
+        except ValueError as e:
+            repo.users.edit(user.name, "RW+")
+
+    def revoke_all_user_permissions(self, username, reponame):
+        user = self.get_user_or_error(username)
+        repo = self.get_repo_or_error(reponame)
+        # note: nothing at all happens here if the user is not already in the repo access list
+        repo.users.remove(user.name)
