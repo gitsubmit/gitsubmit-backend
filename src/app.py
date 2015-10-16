@@ -2,6 +2,7 @@ __authors__ = ["shawkins", "Tsintsir", "sonph", "LeBat"]  # add yourself!
 
 # internal (project libs)
 from config import GITOLITE_ADMIN_PATH
+from db import UsernameAlreadyTakenError, EmailAlreadyTakenError
 from gitolite import GitoliteWrapper, UserDoesNotExistError, KeyDoesNotExistError, \
     CannotDeleteOnlyKeyError, KeyAlreadyExistsError
 
@@ -27,6 +28,14 @@ def list_ssh_keys(username):
     if not gw.user_exists(username):
         return jsonify({"error": "username not found!", "exception": None}), 404
     return jsonify(keys=gw.get_list_of_pretty_key_strings(username))
+
+
+@app.route('/login/', methods=['POST'])
+def login(username, password):
+    result = db.login(username, password)
+    if not result:
+        return jsonify({"error": "bad login credentials!", "exception": None}), 404
+    return jsonify({"result": result}), 200
 
 
 @app.route('/<username>/ssh_keys/', methods=['POST'])
@@ -71,3 +80,14 @@ def remove_key_from_user(username):
     if not result:
         return jsonify({"error": "Key was not found under user!", "exception": None}), 404
     return list_ssh_keys(username)
+
+
+@app.route('/signup/', methods=['POST'])
+def signup(username, password, email):
+    try:
+        db.create_user(username, password,email)
+    except UsernameAlreadyTakenError as e:
+        return jsonify({"error": "Username is already taken!", "exception": str(e)}), 200
+    except EmailAlreadyTakenError as e:
+        return jsonify({"error": "Email is already taken!", "exception": str(e)}), 200
+    return jsonify({"result": "success"}), 200
