@@ -35,7 +35,8 @@ def login(username, password):
     result = db.login(username, password)
     if not result:
         return jsonify({"error": "bad login credentials!", "exception": None}), 404
-    return jsonify({"result": result}), 200
+    # TODO: return token from login
+    return jsonify({"token": result}), 200
 
 
 @app.route('/<username>/ssh_keys/', methods=['POST'])
