@@ -32,7 +32,9 @@ def list_ssh_keys(username):
 
 
 @app.route('/login/', methods=['POST'])
-def login(username, password):
+def login():
+    username = request.form.get("username")
+    password = request.form.get("password")
     dbw = DatabaseWrapper()
     result = dbw.login(username, password)
     if not result:
@@ -86,7 +88,10 @@ def remove_key_from_user(username):
 
 
 @app.route('/signup/', methods=['POST'])
-def signup(username, password, email):
+def signup():
+    username = request.form.get("username")
+    password = request.form.get("password")
+    email = request.form.get("email")
     dbw = DatabaseWrapper();
     try:
         dbw.create_user(username, password,email)
