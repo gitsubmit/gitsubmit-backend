@@ -4,7 +4,7 @@ __authors__ = ["shawkins", "Tsintsir", "sonph", "LeBat"]  # add yourself!
 from config import GITOLITE_ADMIN_PATH
 from gitolite import GitoliteWrapper, UserDoesNotExistError, KeyDoesNotExistError, \
     CannotDeleteOnlyKeyError, KeyAlreadyExistsError
-from db import  ClassDoesNotExistError, UrlNameAlreadyTakenError, DatabaseWrapper
+from db import  ClassDoesNotExistError, UrlNameAlreadyTakenError, DatabaseWrapper, ProjectDoesNotExistError
 
 # base (python packages)
 
@@ -200,11 +200,45 @@ def new_project_due_date(class_url, project_url):
     return jsonify(project_updated=dbw.update_project_due_date(class_url, project_url, due_date))
 
 
-""" TODO:
+@app.route('/classes/<class_name>/projects/<project_name>/make_submission/', methods=["POST"])
+def make_submission(class_name, project_name):
+    owner = request.form.get("owner")
+    dbw = DatabaseWrapper()
+    url_name = '/' + owner + '/submissions/' + project_name + '/'
+    parent_url = '/' + class_name + '/projects/' + project_name + '/'
+    try:
+        dbw.create_submission(url_name, project_name, parent_url, owner)
+        return jsonify(submission_made=url_name)
+    except UrlNameAlreadyTakenError as e:
+        return jsonify({"error": "Url name was already taken!", "exception": str(e)}), 403
+    except ProjectDoesNotExistError as e:
+        return jsonify({"error": "That project does not exist!", "exception": str(e)}), 404
+    except ClassDoesNotExistError as e:
+        return jsonify({"error": "Class does not exist!", "exception": str(e)}), 404
 
-GET: submission contributors
 
-POST: create submissions of project
+@app.route('/<username>/submissions/<submission_name>/contributors/', methods=['POST'])
+def add_contributor(username, submission_name):
+    new_contributor = request.form.get("username")
+    dbw = DatabaseWrapper()
+    try:
+        dbw.add_contributor(username, submission_name, new_contributor)
+        return jsonify(contributor_added=new_contributor)
+    except StandardError as e:
+        return jsonify({"error": "Placeholder error until exceptions are raised by the backend.", "exception": str(e)}), 404
 
-"""
 
+@app.route('/<username>/submissions/<submission_name>/contributors/<removed_username>', methods=['DELETE'])
+def remove_contributor(username, submission_name, removed_username):
+    dbw = DatabaseWrapper()
+    try:
+        dbw.remove_contributor(username, submission_name, removed_username)
+        return jsonify(contributor_removed=removed_username)
+    except StandardError as e:
+        return jsonify({"error": "Placeholder error until exceptions are raised by the backend.", "exception": str(e)}), 404
+
+
+@app.route('/<username>/submissions/<submission_name>/contributors/', methods=['GET'])
+def get_contributors(username, submission_name):
+    dbw = DatabaseWrapper()
+    return dbw.get_contributors(username, submission_name)
