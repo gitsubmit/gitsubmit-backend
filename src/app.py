@@ -38,7 +38,7 @@ def login():
     dbw = DatabaseWrapper()
     result = dbw.login(username, password)
     if not result:
-        return jsonify({"error": "bad login credentials!", "exception": None}), 404
+        return jsonify({"error": "bad login credentials!", "exception": None}), 400
     # TODO: authentication: return token from login
     return jsonify({"token": result}), 200
 
@@ -96,9 +96,9 @@ def signup():
     try:
         dbw.create_user(username, password,email)
     except UsernameAlreadyTakenError as e:
-        return jsonify({"error": "Username is already taken!", "exception": str(e)}), 200
+        return jsonify({"error": "Username is already taken!", "exception": str(e)}), 400
     except EmailAlreadyTakenError as e:
-        return jsonify({"error": "Email is already taken!", "exception": str(e)}), 200
+        return jsonify({"error": "Email is already taken!", "exception": str(e)}), 400
     return jsonify({"result": "success"}), 200
 
 
