@@ -46,6 +46,7 @@ class DatabaseWrapper(object):
             return False
         else:
             salt = user_doc["salt"]
+			# TODO: Return token
             if b2a_hex(PBKDF2(password, salt).read(256)) == user_doc["hash"]:
                 return True
             else:
