@@ -33,10 +33,11 @@ def list_ssh_keys(username):
 
 @app.route('/login/', methods=['POST'])
 def login(username, password):
-    result = db.login(username, password)
+    dbw = DatabaseWrapper()
+    result = dbw.login(username, password)
     if not result:
         return jsonify({"error": "bad login credentials!", "exception": None}), 404
-    # TODO: return token from login
+    # TODO: authentication: return token from login
     return jsonify({"token": result}), 200
 
 
@@ -86,13 +87,16 @@ def remove_key_from_user(username):
 
 @app.route('/signup/', methods=['POST'])
 def signup(username, password, email):
+    dbw = DatabaseWrapper();
     try:
-        db.create_user(username, password,email)
+        dbw.create_user(username, password,email)
     except UsernameAlreadyTakenError as e:
         return jsonify({"error": "Username is already taken!", "exception": str(e)}), 200
     except EmailAlreadyTakenError as e:
         return jsonify({"error": "Email is already taken!", "exception": str(e)}), 200
     return jsonify({"result": "success"}), 200
+
+
 @app.route('/classes/')
 def list_classes():
     dbw = DatabaseWrapper()
