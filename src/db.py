@@ -14,6 +14,7 @@ class EmailAlreadyTakenError(Exception): pass
 class UrlNameAlreadyTakenError(Exception): pass
 class ClassDoesNotExistError(Exception): pass
 class ProjectDoesNotExistError(Exception): pass
+class SubmissionDoesNotExistError(Exception): pass
 
 
 class DatabaseWrapper(object):
@@ -223,3 +224,23 @@ class DatabaseWrapper(object):
         if "due" in project_obj.keys() and type(project_obj["due"]) is datetime:
             project_obj["due"] = project_obj["due"].strftime(TIME_FORMAT)
         return project_obj
+
+
+    # TODO: implement this function. Modify submission object and repo
+    # Raised errors should be handled in the API as well, so don't forget!
+    def add_contributor(self, username, submission_name, new_contributor):
+        return False
+
+
+    # TODO: implement this function. Modify submission object and repo privileges
+    # Raised errors should be handled in the API as well, so don't forget!
+    def remove_contributor(self, username, submission_name, removed_contributor):
+        return False
+
+
+    def get_contributors(self, username, submission_name):
+        submission_db = self.mongo.gitsubmit.submissions
+        submission_doc = submission_db.find_one({"owner": username, "long_name": submission_name})
+        if submission_doc is None:
+            raise SubmissionDoesNotExistError(str(username) + ": " + str(submission_name))
+        return submission_doc["contributors"]
