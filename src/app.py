@@ -92,14 +92,15 @@ def signup():
     username = request.form.get("username")
     password = request.form.get("password")
     email = request.form.get("email")
-    dbw = DatabaseWrapper();
+    dbw = DatabaseWrapper()
     try:
         dbw.create_user(username, password,email)
     except UsernameAlreadyTakenError as e:
         return jsonify({"error": "Username is already taken!", "exception": str(e)}), 400
     except EmailAlreadyTakenError as e:
         return jsonify({"error": "Email is already taken!", "exception": str(e)}), 400
-    return dbw.login(username, password)
+    result = dbw.login(username, password)
+    return jsonify({"token": result}), 200
 
 
 @app.route('/classes/')
