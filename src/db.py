@@ -48,7 +48,7 @@ class DatabaseWrapper(object):
             return False
         else:
             salt = user_doc["salt"]
-			# TODO: Better secret handling
+            # TODO: Better secret handling
             if b2a_hex(PBKDF2(password, salt).read(256)) == user_doc["hash"]:
                 return jwt.encode({'username': username, 'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=2)}, 'gitsubmitsecret')
             else:
