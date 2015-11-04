@@ -21,3 +21,7 @@ ${ROOT_URL}         http://${SERVER}/
 teacher user is logged in
     no operation
     #TODO: actually log a teacher in
+
+testing webserver is running
+    no operation
+    # nah lol
