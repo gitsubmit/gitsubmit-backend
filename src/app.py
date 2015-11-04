@@ -1,7 +1,7 @@
 __authors__ = ["shawkins", "Tsintsir", "sonph", "LeBat"]  # add yourself!
 
 # internal (project libs)
-from config import GITOLITE_ADMIN_PATH
+from config import GITOLITE_ADMIN_PATH, DATABASE_PORT
 from db import UsernameAlreadyTakenError, EmailAlreadyTakenError
 from gitolite import GitoliteWrapper, UserDoesNotExistError, KeyDoesNotExistError, \
     CannotDeleteOnlyKeyError, KeyAlreadyExistsError
@@ -16,6 +16,24 @@ from sshpubkeys import InvalidKeyException
 
 app = Flask(__name__)
 app.debug = True  # TODO: unset this after release!
+
+
+def configured_main(custom_gitolite_path, database_port):
+    """ For testing versions of the API, we can point to a different gitolite admin directory, and a different database.
+    Note that if this is not called (instead, gunicorn is invoked with app:app) then all defaults remain.
+
+    :param custom_gitolite_path: path to local git instance of gitolite
+    :param database_port: integer of port where mongodb is served
+    :return: wsgi app instance
+    """
+
+    # first, set these attributes as global, so that in later uses, we get THESE versions
+    global GITOLITE_ADMIN_PATH, DATABASE_PORT
+    GITOLITE_ADMIN_PATH = custom_gitolite_path
+    DATABASE_PORT = database_port
+
+    # gunicorn requires that whatever method we call returns the wsgi app, so:
+    return app
 
 
 @app.route('/')
@@ -35,7 +53,7 @@ def list_ssh_keys(username):
 def login():
     username = request.form.get("username")
     password = request.form.get("password")
-    dbw = DatabaseWrapper()
+    dbw = DatabaseWrapper(DATABASE_PORT)
     result = dbw.login(username, password)
     if not result:
         return jsonify({"error": "bad login credentials!", "exception": None}), 400
@@ -51,11 +69,12 @@ def post_new_ssh_key(username):
     if False:  # TODO: ensure user is authed and is self
         return jsonify({"error": "Unauthorized"}), 401
 
-    gw = GitoliteWrapper(GITOLITE_ADMIN_PATH)
     pkey_contents = request.form.get("pkey_contents")
 
     if not pkey_contents:
         return jsonify({"error": "No key was given!"}), 400
+
+    gw = GitoliteWrapper(GITOLITE_ADMIN_PATH)
 
     try:
         pretty_key_hex = gw.add_pkey_to_user(username, pkey_contents)
@@ -73,8 +92,9 @@ def remove_key_from_user(username):
     if False:  # TODO: ensure user is authed and is self
         return jsonify({"error": "Unauthorized"}), 401
 
-    gw = GitoliteWrapper(GITOLITE_ADMIN_PATH)
     pkey = request.form.get("pkey")
+
+    gw = GitoliteWrapper(GITOLITE_ADMIN_PATH)
 
     try:
         result = gw.remove_key_from_user_by_pretty_string(username, pkey)
@@ -92,7 +112,7 @@ def signup():
     username = request.form.get("username")
     password = request.form.get("password")
     email = request.form.get("email")
-    dbw = DatabaseWrapper();
+    dbw = DatabaseWrapper(DATABASE_PORT)
     try:
         dbw.create_user(username, password,email)
     except UsernameAlreadyTakenError as e:
@@ -104,18 +124,18 @@ def signup():
 
 @app.route('/classes/')
 def list_classes():
-    dbw = DatabaseWrapper()
+    dbw = DatabaseWrapper(DATABASE_PORT)
     return jsonify(classes=dbw.get_all_classes())
 
 
 @app.route('/classes/', methods=["POST"])
 def new_class():
-    dbw = DatabaseWrapper()
     class_name = request.form.get("class_name")
     url_name = request.form.get("url_name")
     description = request.form.get("description")
 
     owner = "spencer"  # TODO: get currently logged in user
+    dbw = DatabaseWrapper(DATABASE_PORT)
     try:
         c = dbw.create_class(url_name, class_name, description, owner)
         print c
@@ -126,13 +146,13 @@ def new_class():
 
 @app.route('/classes/<class_url>/projects/')
 def list_projects(class_url):
-    dbw = DatabaseWrapper()
+    dbw = DatabaseWrapper(DATABASE_PORT)
     return jsonify(projects=dbw.get_all_projects_for_class(class_url))
 
 
 @app.route('/classes/<class_url>/owner/')
 def class_owner(class_url):
-    dbw = DatabaseWrapper()
+    dbw = DatabaseWrapper(DATABASE_PORT)
     try:
         class_obj = dbw.get_class_or_error(class_url)
         return jsonify(owner=class_obj["owner"])
@@ -142,7 +162,7 @@ def class_owner(class_url):
 
 @app.route('/classes/<class_url>/teachers/')
 def class_teachers(class_url):
-    dbw = DatabaseWrapper()
+    dbw = DatabaseWrapper(DATABASE_PORT)
     try:
         class_obj = dbw.get_class_or_error(class_url)
         return jsonify(teachers=class_obj["teachers"])
@@ -152,7 +172,7 @@ def class_teachers(class_url):
 
 @app.route('/classes/<class_url>/students/')
 def class_students(class_url):
-    dbw = DatabaseWrapper()
+    dbw = DatabaseWrapper(DATABASE_PORT)
     try:
         class_obj = dbw.get_class_or_error(class_url)
         return jsonify(students=class_obj["students"])
@@ -162,8 +182,8 @@ def class_students(class_url):
 
 @app.route('/classes/<class_url>/student/', methods=["POST"])
 def add_student(class_url):
-    dbw = DatabaseWrapper()
     student = request.form.get("username")
+    dbw = DatabaseWrapper(DATABASE_PORT)
 
     try:
         dbw.add_student_to_class(class_url, student)
@@ -177,8 +197,8 @@ def add_student(class_url):
 
 @app.route('/classes/<class_url>/teacher/', methods=["POST"])
 def add_teacher(class_url):
-    dbw = DatabaseWrapper()
     teacher = request.form.get("username")
+    dbw = DatabaseWrapper(DATABASE_PORT)
 
     try:
         dbw.add_teacher_to_class(class_url, teacher)
@@ -192,7 +212,7 @@ def add_teacher(class_url):
 
 @app.route('/classes/<class_url>/projects/<project_url>/owner/')
 def get_project_owner(class_url, project_url):
-    dbw = DatabaseWrapper()
+    dbw = DatabaseWrapper(DATABASE_PORT)
     try:
         project_obj = dbw.get_project_or_error(class_url, project_url)
         return jsonify(owner=project_obj["owner"])
@@ -202,7 +222,6 @@ def get_project_owner(class_url, project_url):
 
 @app.route('/classes/<class_url>/projects/', methods=["POST"])
 def new_project(class_url):
-    dbw = DatabaseWrapper()
     project_name = request.form.get("project_name")
     url_name = request.form.get("url_name")
     description = request.form.get("description")
@@ -212,6 +231,7 @@ def new_project(class_url):
 
     owner = "spencer"  # TODO: get currently logged in user
 
+    dbw = DatabaseWrapper(DATABASE_PORT)
     try:
         dbw.create_project(url_name, project_name, description, class_url, team_based, due_date, owner, max_size)
         return jsonify(project_created=url_name)
@@ -223,17 +243,17 @@ def new_project(class_url):
 
 @app.route('/classes/<class_url>/projects/<project_url>/due_date', methods=["POST"])
 def new_project_due_date(class_url, project_url):
-    dbw = DatabaseWrapper()
     due_date = request.form.get("date")
+    dbw = DatabaseWrapper(DATABASE_PORT)
     return jsonify(project_updated=dbw.update_project_due_date(class_url, project_url, due_date))
 
 
 @app.route('/classes/<class_name>/projects/<project_name>/make_submission/', methods=["POST"])
 def make_submission(class_name, project_name):
     owner = request.form.get("owner")
-    dbw = DatabaseWrapper()
     url_name = '/' + owner + '/submissions/' + project_name + '/'
     parent_url = '/' + class_name + '/projects/' + project_name + '/'
+    dbw = DatabaseWrapper(DATABASE_PORT)
     try:
         dbw.create_submission(url_name, project_name, parent_url, owner)
         return jsonify(submission_made=url_name)
@@ -248,7 +268,7 @@ def make_submission(class_name, project_name):
 @app.route('/<username>/submissions/<submission_name>/contributors/', methods=['POST'])
 def add_contributor(username, submission_name):
     new_contributor = request.form.get("username")
-    dbw = DatabaseWrapper()
+    dbw = DatabaseWrapper(DATABASE_PORT)
     try:
         dbw.add_contributor(username, submission_name, new_contributor)
         return jsonify(contributor_added=new_contributor)
@@ -258,7 +278,7 @@ def add_contributor(username, submission_name):
 
 @app.route('/<username>/submissions/<submission_name>/contributors/<removed_username>', methods=['DELETE'])
 def remove_contributor(username, submission_name, removed_username):
-    dbw = DatabaseWrapper()
+    dbw = DatabaseWrapper(DATABASE_PORT)
     try:
         dbw.remove_contributor(username, submission_name, removed_username)
         return jsonify(contributor_removed=removed_username)
@@ -268,5 +288,5 @@ def remove_contributor(username, submission_name, removed_username):
 
 @app.route('/<username>/submissions/<submission_name>/contributors/', methods=['GET'])
 def get_contributors(username, submission_name):
-    dbw = DatabaseWrapper()
+    dbw = DatabaseWrapper(DATABASE_PORT)
     return dbw.get_contributors(username, submission_name)

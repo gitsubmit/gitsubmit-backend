@@ -19,8 +19,8 @@ class SubmissionDoesNotExistError(Exception): pass
 
 class DatabaseWrapper(object):
 
-    def __init__(self):
-        self.mongo = MongoClient()
+    def __init__(self, port=None):
+        self.mongo = MongoClient(port=port)
 
     def create_user(self, username, email, password):
         db = self.mongo.gitsubmit.users

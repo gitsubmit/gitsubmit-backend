@@ -18,3 +18,6 @@ ${VALID PASSWORD}    demopass
 ${ROOT_URL}         http://${SERVER}/
 
 *** Keywords ***
+teacher user is logged in
+    no operation
+    #TODO: actually log a teacher in
