@@ -1,6 +1,8 @@
 import binascii
 import os
 import requests
+from SSHKeyLib import SSHKeyLib
+
 __author__ = 'shawkins'
 """
 Yes, this filename does not comply with PEP8. Thank robotframework for that.
@@ -38,4 +40,13 @@ class APIClientLib(object):
         keys_obj = keys_result.json()
         return_obj = {"status_code": keys_result.status_code,
                       "data": keys_obj}
+        return return_obj
+
+    def add_randomized_key_to_user(self, url_root, user):
+        ssh = SSHKeyLib()
+        key = ssh.create_bogus_key()["pubkey_contents"]
+        key_obj = {"pkey_contents": key}
+        post_result = requests.post(url_root+"/"+user+"/ssh_keys/", data=key_obj)
+        return_obj = {"status_code": post_result.status_code,
+                      "data": post_result.json()}
         return return_obj
