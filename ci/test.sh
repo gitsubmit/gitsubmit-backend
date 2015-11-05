@@ -62,6 +62,7 @@ sleep 3 # let gunicorn warm up
 
 cd ../test
 # Run tests with an X virtual frame buffer
+export PYTHONPATH=$(readlink -f libraries):$PYTHONPATH
 xvfb-run --server-args="-screen 0, 1920x1080x24" python -m robot.run --noncritical not_implemented .
 kill $TESTSERVERPID
 
