@@ -58,7 +58,7 @@ if __name__ == "__main__":
     dbw.create_user("student2", "student2@gmail.com", password)
     dbw.create_user("teacher1", "teacher1@gmail.com", password)
     dbw.create_user("teacher2", "teacher2@gmail.com", password)
-    dbw.create_user("spencer", "teacher2@gmail.com", password)  # because of some hardcoded stuff, heh
+    dbw.create_user("spencer", "spencer@gmail.com", password)  # because of some hardcoded stuff, heh
 
     dbw.create_class("intro_to_computers", "Introduction to Computers", "Introduction to Computers description", "teacher1")
     dbw.create_class("adv_computers", "Advanced Computers", "Advanced Computers description", "teacher2")
