@@ -198,7 +198,7 @@ class DatabaseWrapper(object):
         parent_class_obj = class_db.find_one({"url_name": parent_project_obj["parent"]})
         if parent_class_obj is None:
             raise ClassDoesNotExistError(str(parent_project_obj["parent"]))
-        parent_class_url = parent_class_obj
+        parent_class_url = parent_class_obj["url_name"]
 
         gw = GitoliteWrapper(self.glpath)
         # Make sure the owner exists
