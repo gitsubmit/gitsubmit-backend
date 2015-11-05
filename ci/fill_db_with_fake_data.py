@@ -38,7 +38,7 @@ if __name__ == "__main__":
 
     password = "verybadpw"
 
-    dbw = DatabaseWrapper(port=args.mongo_port)
+    dbw = DatabaseWrapper(args.pyolite_location, port=args.mongo_port)
     gw = GitoliteWrapper(args.pyolite_location)
 
     # give the users some pkeys
@@ -61,10 +61,10 @@ if __name__ == "__main__":
     dbw.create_class("adv_computers", "Advanced Computers", "Advanced Computers description", "teacher2")
 
     dbw.create_project("turn_on_a_computer", "Turn on a computer", "Turn on a computer description",
-                       "intro_to_computers", False, datetime.datetime.now() + datetime.timedelta(days=5), "teacher1")
+                       "intro_to_computers", False, (datetime.datetime.now() + datetime.timedelta(days=5)).strftime("%Y-%m-%d"), "teacher1")
 
     dbw.create_project("use_a_computer", "Use a computer", "Use a computer description",
-                       "adv_computers", False, datetime.datetime.now() + datetime.timedelta(days=2), "teacher2")
+                       "adv_computers", False, (datetime.datetime.now() + datetime.timedelta(days=2)).strftime("%Y-%m-%d"), "teacher2")
 
     dbw.create_submission("turned_on_a_computer", "Student 1 turned on a computer", "turn_on_a_computer", "student1")
     dbw.create_submission("used_a_computer", "Student 2 used a computer", "use_a_computer", "student2")

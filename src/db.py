@@ -1,6 +1,6 @@
 from datetime import datetime
 from gitolite import GitoliteWrapper
-from config import GITOLITE_ADMIN_PATH, TIME_FORMAT
+from config import TIME_FORMAT
 from binascii import b2a_hex
 from os import urandom
 from pymongo import MongoClient
@@ -19,8 +19,9 @@ class SubmissionDoesNotExistError(Exception): pass
 
 class DatabaseWrapper(object):
 
-    def __init__(self, port=None):
+    def __init__(self, gitolite_admin_path, port=None):
         self.mongo = MongoClient(port=port)
+        self.glpath = gitolite_admin_path
 
     def create_user(self, username, email, password):
         db = self.mongo.gitsubmit.users
@@ -96,7 +97,7 @@ class DatabaseWrapper(object):
     def create_class(self, url_name, long_name, description, owner):
         class_db = self.mongo.gitsubmit.classes
 
-        gw = GitoliteWrapper(GITOLITE_ADMIN_PATH)
+        gw = GitoliteWrapper(self.glpath)
         # Make sure the owner exists
         gw.get_user_or_error(owner)
 
@@ -138,7 +139,7 @@ class DatabaseWrapper(object):
         if parent_class_obj is None:
             raise ClassDoesNotExistError(str(parent_class_url_name))
 
-        gw = GitoliteWrapper(GITOLITE_ADMIN_PATH)
+        gw = GitoliteWrapper(self.glpath)
         # Make sure the owner exists
         gw.get_user_or_error(owner)
 
@@ -199,7 +200,7 @@ class DatabaseWrapper(object):
             raise ClassDoesNotExistError(str(parent_project_obj["parent"]))
         parent_class_url = parent_class_obj
 
-        gw = GitoliteWrapper(GITOLITE_ADMIN_PATH)
+        gw = GitoliteWrapper(self.glpath)
         # Make sure the owner exists
         gw.get_user_or_error(owner)
 

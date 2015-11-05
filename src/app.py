@@ -53,7 +53,7 @@ def list_ssh_keys(username):
 def login():
     username = request.form.get("username")
     password = request.form.get("password")
-    dbw = DatabaseWrapper(DATABASE_PORT)
+    dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     result = dbw.login(username, password)
     if not result:
         return jsonify({"error": "bad login credentials!", "exception": None}), 400
@@ -112,7 +112,7 @@ def signup():
     username = request.form.get("username")
     password = request.form.get("password")
     email = request.form.get("email")
-    dbw = DatabaseWrapper(DATABASE_PORT)
+    dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     try:
         dbw.create_user(username, password,email)
     except UsernameAlreadyTakenError as e:
@@ -124,7 +124,7 @@ def signup():
 
 @app.route('/classes/')
 def list_classes():
-    dbw = DatabaseWrapper(DATABASE_PORT)
+    dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     return jsonify(classes=dbw.get_all_classes())
 
 
@@ -135,7 +135,7 @@ def new_class():
     description = request.form.get("description")
 
     owner = "spencer"  # TODO: get currently logged in user
-    dbw = DatabaseWrapper(DATABASE_PORT)
+    dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     try:
         c = dbw.create_class(url_name, class_name, description, owner)
         print c
@@ -146,13 +146,13 @@ def new_class():
 
 @app.route('/classes/<class_url>/projects/')
 def list_projects(class_url):
-    dbw = DatabaseWrapper(DATABASE_PORT)
+    dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     return jsonify(projects=dbw.get_all_projects_for_class(class_url))
 
 
 @app.route('/classes/<class_url>/owner/')
 def class_owner(class_url):
-    dbw = DatabaseWrapper(DATABASE_PORT)
+    dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     try:
         class_obj = dbw.get_class_or_error(class_url)
         return jsonify(owner=class_obj["owner"])
@@ -162,7 +162,7 @@ def class_owner(class_url):
 
 @app.route('/classes/<class_url>/teachers/')
 def class_teachers(class_url):
-    dbw = DatabaseWrapper(DATABASE_PORT)
+    dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     try:
         class_obj = dbw.get_class_or_error(class_url)
         return jsonify(teachers=class_obj["teachers"])
@@ -172,7 +172,7 @@ def class_teachers(class_url):
 
 @app.route('/classes/<class_url>/students/')
 def class_students(class_url):
-    dbw = DatabaseWrapper(DATABASE_PORT)
+    dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     try:
         class_obj = dbw.get_class_or_error(class_url)
         return jsonify(students=class_obj["students"])
@@ -183,7 +183,7 @@ def class_students(class_url):
 @app.route('/classes/<class_url>/student/', methods=["POST"])
 def add_student(class_url):
     student = request.form.get("username")
-    dbw = DatabaseWrapper(DATABASE_PORT)
+    dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
 
     try:
         dbw.add_student_to_class(class_url, student)
@@ -198,7 +198,7 @@ def add_student(class_url):
 @app.route('/classes/<class_url>/teacher/', methods=["POST"])
 def add_teacher(class_url):
     teacher = request.form.get("username")
-    dbw = DatabaseWrapper(DATABASE_PORT)
+    dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
 
     try:
         dbw.add_teacher_to_class(class_url, teacher)
@@ -212,7 +212,7 @@ def add_teacher(class_url):
 
 @app.route('/classes/<class_url>/projects/<project_url>/owner/')
 def get_project_owner(class_url, project_url):
-    dbw = DatabaseWrapper(DATABASE_PORT)
+    dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     try:
         project_obj = dbw.get_project_or_error(class_url, project_url)
         return jsonify(owner=project_obj["owner"])
@@ -231,7 +231,7 @@ def new_project(class_url):
 
     owner = "spencer"  # TODO: get currently logged in user
 
-    dbw = DatabaseWrapper(DATABASE_PORT)
+    dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     try:
         dbw.create_project(url_name, project_name, description, class_url, team_based, due_date, owner, max_size)
         return jsonify(project_created=url_name)
@@ -244,7 +244,7 @@ def new_project(class_url):
 @app.route('/classes/<class_url>/projects/<project_url>/due_date', methods=["POST"])
 def new_project_due_date(class_url, project_url):
     due_date = request.form.get("date")
-    dbw = DatabaseWrapper(DATABASE_PORT)
+    dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     return jsonify(project_updated=dbw.update_project_due_date(class_url, project_url, due_date))
 
 
@@ -253,7 +253,7 @@ def make_submission(class_name, project_name):
     owner = request.form.get("owner")
     url_name = '/' + owner + '/submissions/' + project_name + '/'
     parent_url = '/' + class_name + '/projects/' + project_name + '/'
-    dbw = DatabaseWrapper(DATABASE_PORT)
+    dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     try:
         dbw.create_submission(url_name, project_name, parent_url, owner)
         return jsonify(submission_made=url_name)
@@ -268,7 +268,7 @@ def make_submission(class_name, project_name):
 @app.route('/<username>/submissions/<submission_name>/contributors/', methods=['POST'])
 def add_contributor(username, submission_name):
     new_contributor = request.form.get("username")
-    dbw = DatabaseWrapper(DATABASE_PORT)
+    dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     try:
         dbw.add_contributor(username, submission_name, new_contributor)
         return jsonify(contributor_added=new_contributor)
@@ -278,7 +278,7 @@ def add_contributor(username, submission_name):
 
 @app.route('/<username>/submissions/<submission_name>/contributors/<removed_username>', methods=['DELETE'])
 def remove_contributor(username, submission_name, removed_username):
-    dbw = DatabaseWrapper(DATABASE_PORT)
+    dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     try:
         dbw.remove_contributor(username, submission_name, removed_username)
         return jsonify(contributor_removed=removed_username)
@@ -288,5 +288,5 @@ def remove_contributor(username, submission_name, removed_username):
 
 @app.route('/<username>/submissions/<submission_name>/contributors/', methods=['GET'])
 def get_contributors(username, submission_name):
-    dbw = DatabaseWrapper(DATABASE_PORT)
+    dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     return dbw.get_contributors(username, submission_name)
