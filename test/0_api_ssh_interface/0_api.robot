@@ -16,8 +16,18 @@ Can list classses
 Can create classes
     Given testing webserver is running
     And teacher user is logged in
-    When User creates a new class
+    When User creates a new randomized class
     Then there should be 3 classes when user asks for a list of classes
+
+Cannot create classes with same url
+    Given testing webserver is running
+    And teacher user is logged in
+    When User creates a predefined class successfully
+    Then there should be 4 classes when user asks for a list of classes
+
+    And When User attempts to create the same predefined class unsuccessfully
+    Then there should be 4 classes when user asks for a list of classes
+
 
 *** Keywords ***
 There should be ${number_classes} classes when user asks for a list of classes
@@ -30,7 +40,17 @@ There should be ${number_classes} classes when user asks for a list of classes
     # We pre-inserted two classes, so they should be there
     should be equal as integers  ${number_classes}  ${number_classes}
 
-User creates a new class
+User creates a new randomized class
     ${obj}=  create randomized class  ${ROOT_URL}
     ${code}=  get from dictionary  ${obj}  status_code
     should be equal as integers  ${code}  200
+
+User creates a predefined class successfully
+    ${obj}=  create predefined class  ${ROOT_URL}
+    ${code}=  get from dictionary  ${obj}  status_code
+    should be equal as integers  ${code}  200
+
+User attempts to create the same predefined class unsuccessfully
+    ${obj}=  create predefined class  ${ROOT_URL}
+    ${code}=  get from dictionary  ${obj}  status_code
+    should not be equal as integers  ${code}  200

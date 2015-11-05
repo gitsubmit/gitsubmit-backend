@@ -23,3 +23,12 @@ class APIClientLib(object):
         return_obj = {"status_code": result.status_code,
                       "data": result.json()}
         return return_obj
+
+    def create_predefined_class(self, url_root):
+        randomized_url_name = "test_predef_classs"
+        long_name = "A Predefined Class for Testing"
+        class_obj = {"url_name": randomized_url_name, "class_name": long_name, "description": long_name}
+        result = requests.post(url_root+"/classes/", data=class_obj)
+        return_obj = {"status_code": result.status_code,
+                      "data": result.json()}
+        return return_obj
