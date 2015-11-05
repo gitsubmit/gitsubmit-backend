@@ -19,10 +19,11 @@ ${VALID PASSWORD}    demopass
 ${ROOT_URL}         http://${SERVER}/
 
 *** Keywords ***
-teacher user is logged in
-    no operation
-    #TODO: actually log a teacher in
-
 testing webserver is running
     no operation
-    # nah lol
+    # this is a test prereq but
+    # lol gherkin
+
+user ${user} is logged in
+    no operation
+    # TODO: this
