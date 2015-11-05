@@ -38,3 +38,4 @@ class APIClientLib(object):
         keys_obj = keys_result.json()
         return_obj = {"status_code": keys_result.status_code,
                       "data": keys_obj}
+        return return_obj
