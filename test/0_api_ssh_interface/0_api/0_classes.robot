@@ -1,5 +1,5 @@
 *** Settings ***
-Documentation     Test suite that contains tests related to the API
+Documentation     Test suite that contains tests related to the API / Classes
 Resource          ../resources/resource.robot
 Library           APIClientLib
 Library           HTTPClientLib
@@ -8,18 +8,20 @@ Library           Collections
 
 *** Test Cases ***
 Can list classses
-    [Tags]  database  class
+    [Tags]  api  database  classes
     Given testing webserver is running
     And teacher user is logged in
     Then there should be 2 classes when user asks for a list of classes
 
 Can create classes
+    [Tags]  api  database  classes
     Given testing webserver is running
     And teacher user is logged in
     When User creates a new randomized class
     Then there should be 3 classes when user asks for a list of classes
 
 Cannot create classes with same url
+    [Tags]  api  database  classes
     Given testing webserver is running
     And teacher user is logged in
     When User creates a predefined class successfully
@@ -36,9 +38,9 @@ There should be ${number_classes} classes when user asks for a list of classes
     should be equal as integers  ${code}  200
     ${content}=  get from dictionary  ${obj}  data
     ${classes}=  get from dictionary  ${content}  classes
-    ${number_classes}=  get length  ${classes}
+    ${len_classes}=  get length  ${classes}
     # We pre-inserted two classes, so they should be there
-    should be equal as integers  ${number_classes}  ${number_classes}
+    should be equal as integers  ${number_classes}  ${len_classes}
 
 User creates a new randomized class
     ${obj}=  create randomized class  ${ROOT_URL}

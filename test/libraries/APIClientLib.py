@@ -32,3 +32,9 @@ class APIClientLib(object):
         return_obj = {"status_code": result.status_code,
                       "data": result.json()}
         return return_obj
+
+    def list_keys_for_user(self, url_root, user):
+        keys_result = requests.get(url_root+"/"+user+"/ssh_keys/")
+        keys_obj = keys_result.json()
+        return_obj = {"status_code": keys_result.status_code,
+                      "data": keys_obj}
