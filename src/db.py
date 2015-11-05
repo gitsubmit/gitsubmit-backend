@@ -30,7 +30,7 @@ class DatabaseWrapper(object):
         email_check_doc = db.find_one({"email": email})
         if email_check_doc is not None:
             raise EmailAlreadyTakenError("That email address is already taken.")
-        salt = urandom(256)
+        salt = urandom(256).encode('base64')
         db.insert_one(
             {
                 "username": username,

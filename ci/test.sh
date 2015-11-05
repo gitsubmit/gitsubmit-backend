@@ -52,10 +52,6 @@ cd $TEST_PATH
 # shove some data in there
 python ci/fill_db_with_fake_data.py -p 27117 -pyo $GL_PATH
 
-echo "HERE I AM"
-echo $(pwd)
-echo "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
-
 cd src
 # start a testing server on port 5555
 /virtualenvs/gitsubmit_env/bin/gunicorn --access-logfile /srv/logs/staging_access.log -w 1 -b :5555 'app:configured_main("$GL_PATH", 27117)' &
@@ -73,3 +69,4 @@ docker stop gitotestname
 docker rm gitotestname
 docker stop mongotestname
 docker rm mongotestname
+rm bogus_key_*
