@@ -78,7 +78,7 @@ def update_user_info():
     dbw = DatabaseWrapper()
     username = "konrad" #TODO: get currently logged in user
     new_email = request.form.get("email")
-    dbw.update(username, new_email)
+    dbw.update_email(username, new_email)
     return jsonify(email_added=new_email)
 
 
