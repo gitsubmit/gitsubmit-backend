@@ -1,6 +1,6 @@
 *** Settings ***
 Documentation     Test suite that contains tests related to the API / Classes
-Resource          ../resources/resource.robot
+Resource          resource.robot
 Library           APIClientLib
 Library           HTTPClientLib
 Library           Collections
@@ -10,20 +10,20 @@ Library           Collections
 Can list classses
     [Tags]  api  database  classes
     Given testing webserver is running
-    And teacher user is logged in
+    And user teacher1 is logged in
     Then there should be 2 classes when user asks for a list of classes
 
 Can create classes
     [Tags]  api  database  classes
     Given testing webserver is running
-    And teacher user is logged in
+    And user teacher1 is logged in
     When User creates a new randomized class
     Then there should be 3 classes when user asks for a list of classes
 
 Cannot create classes with same url
     [Tags]  api  database  classes
     Given testing webserver is running
-    And teacher user is logged in
+    And user teacher1 is logged in
     When User creates a predefined class successfully
     Then there should be 4 classes when user asks for a list of classes
 
