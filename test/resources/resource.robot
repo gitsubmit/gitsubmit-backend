@@ -8,6 +8,7 @@ Documentation     A resource file with reusable keywords and variables.
 ...               Based on example code at: https://bitbucket.org/robotframework/webdemo/src/6a95fc3744c7?at=master
 Library           Selenium2Library
 Library           ../libraries/HTTPClientLib.py
+Library           ../libraries/APIClientLib.py
 
 *** Variables ***
 ${SERVER}         localhost:5555

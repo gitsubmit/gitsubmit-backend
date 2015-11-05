@@ -69,4 +69,6 @@ docker stop gitotestname
 docker rm gitotestname
 docker stop mongotestname
 docker rm mongotestname
+
+cd ..
 rm bogus_key_*
