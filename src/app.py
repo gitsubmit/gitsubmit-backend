@@ -136,6 +136,8 @@ def new_class():
 
     owner = "spencer"  # TODO: get currently logged in user
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
+    print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+    print GITOLITE_ADMIN_PATH
     try:
         c = dbw.create_class(url_name, class_name, description, owner)
         print c
