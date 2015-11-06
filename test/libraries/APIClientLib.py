@@ -11,6 +11,17 @@ Yes, this filename does not comply with PEP8. Thank robotframework for that.
 
 class APIClientLib(object):
 
+    def create_predefined_project(self, url_root, class_name):
+        randomized_url_name = "test_predefined_project"
+        long_name = "A Predefined Project for Testing"
+        project_obj = {"url_name": randomized_url_name, "project_name": long_name, "description": long_name,
+                       "team_based": True, "max_members": 4,
+                       "due_date": (datetime.datetime.now() + datetime.timedelta(days=2)).strftime("%Y-%m-%d")}
+        result = requests.post(url_root+"/classes/" + class_name +"/projects/", data=project_obj)
+        return_obj = {"status_code": result.status_code,
+                      "data": result.json()}
+        return return_obj
+
     def create_randomized_project(self, url_root, class_name):
         randomized_url_name = "test_random_project_" + binascii.b2a_hex(os.urandom(15))[:8]
         long_name = "A Randomized Project for Testing"

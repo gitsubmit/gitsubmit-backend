@@ -23,21 +23,47 @@ Teacher can create a new project
     [Tags]  api  database  projects
     Given testing webserver is running
     And user teacher1 is logged in
-    Then number of projects in "adv_computers" should increase by 1 after teacher1 creates a randomized project
+    Then number of projects in "adv_computers" should increase by one after user creates a randomized project
+
+Cannot create projects with same url
+    [Tags]  api  database  classes
+    Given testing webserver is running
+    And user teacher1 is logged in
+    Then Number of projects in "adv_computers" should only increase by one when user creates a predefined project twice
+
 
 *** Keywords ***
-number of projects in "${class}" should increase by 1 after ${user} creates a randomized project
+Number of projects in "${class}" should only increase by one when user creates a predefined project twice
+    ${num_projects}=  get number of projects in class "${class}"
+    ${expected_after}=  evaluate  ${num_projects} + 1
+    User creates a predefined project in class "${class}" successfully
+    There should be ${expected_after} projects in class ${class} when user asks for a list of projects
+
+    User creates the same predefined project in class "${class}" unsuccessfully
+    There should be ${expected_after} projects in class ${class} when user asks for a list of projects
+
+number of projects in "${class}" should increase by one after user creates a randomized project
     ${num_classes}=  get number of projects in class "${class}"
     ${expected_after}=  evaluate  ${num_classes} + 1
-    User creates a new randomized project
+    User creates a new randomized project in class "${class}"
     there should be ${expected_after} projects in class ${class} when user asks for a list of projects
+
+User creates a predefined project in class "${class}" successfully
+    ${obj}=  create predefined project  ${ROOT_URL}  ${class}
+    ${code}=  get from dictionary  ${obj}  status_code
+    should be equal as integers  ${code}  200
+
+User creates the same predefined project in class "${class}" unsuccessfully
+    ${obj}=  create predefined project  ${ROOT_URL}  ${class}
+    ${code}=  get from dictionary  ${obj}  status_code
+    should not be equal as integers  ${code}  200
 
 There should be ${number_projects} projects in class ${class} when user asks for a list of projects
     ${len_projects}=  get number of projects in class "${class}"
     should be equal as integers  ${number_projects}  ${len_projects}
 
-User creates a new randomized project
-    ${obj}=  create randomized project  ${ROOT_URL}
+User creates a new randomized project in class "${class}"
+    ${obj}=  create randomized project  ${ROOT_URL}  ${class}
     ${code}=  get from dictionary  ${obj}  status_code
     should be equal as integers  ${code}  200
 
