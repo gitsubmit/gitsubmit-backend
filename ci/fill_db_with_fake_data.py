@@ -54,11 +54,12 @@ if __name__ == "__main__":
     gw.add_pkey_to_user("spencer", bogus_key4["pubkey_contents"])
 
     # populate the databases with some data
-    dbw.create_user("student1", "student1@gmail.com", password)
-    dbw.create_user("student2", "student2@gmail.com", password)
-    dbw.create_user("teacher1", "teacher1@gmail.com", password)
-    dbw.create_user("teacher2", "teacher2@gmail.com", password)
-    dbw.create_user("spencer", "spencer@gmail.com", password)  # because of some hardcoded stuff, heh
+    dbw.create_user("student1", "student1@gmail.com", password, "Student", "One")
+    dbw.create_user("student2", "student2@gmail.com", password, "Student", "Two")
+    dbw.create_user("teacher1", "teacher1@gmail.com", password, "Teacher", "One")
+    dbw.create_user("teacher2", "teacher2@gmail.com", password, "Teacher", "Two")
+    dbw.create_user("spencer", "spencer@gmail.com", password, "Spencer", "Hawkins")  # because of some hardcoded stuff, heh
+    dbw.create_user("konrad", "konrad@gmail.com", password, "Konrad", "Ryce")  # because of some hardcoded stuff, heh
 
     dbw.create_class("intro_to_computers", "Introduction to Computers", "Introduction to Computers description", "teacher1")
     dbw.create_class("adv_computers", "Advanced Computers", "Advanced Computers description", "teacher2")
