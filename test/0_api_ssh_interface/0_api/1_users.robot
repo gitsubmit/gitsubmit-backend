@@ -35,7 +35,7 @@ User can delete an existing key from themselves
     [Tags]  api  database  users  sshkeys
     Given testing webserver is running
     And user student1 is logged in
-    Then student1 can add then remove a key
+    Then "student1" can add then remove a key
 
 User cannot delete their last key
     [Tags]  api  database  users  sshkeys
@@ -56,7 +56,7 @@ Cannot remove key from ${user}
     User removes first key of ${user} unsuccessfully
     There should be ${keys_before} keys when user asks for a list of ${user}'s keys
 
-${user} can add then remove a key
+"${user}" can add then remove a key
     ${keys_before}=  get number of keys for ${user}
     ${expected_after_add}=  evaluate  ${keys_before} + 1
     "${user}" adds a randomized key to their account
