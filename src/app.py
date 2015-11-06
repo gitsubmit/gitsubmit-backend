@@ -43,6 +43,7 @@ def hello_world():
 
 @app.route('/<username>/ssh_keys/', methods=['GET'])
 def list_ssh_keys(username):
+    """ covered by test 1_users / `Can list user's SSH keys` """
     gw = GitoliteWrapper(GITOLITE_ADMIN_PATH)
     if not gw.user_exists(username):
         return jsonify({"error": "username not found!", "exception": None}), 404
@@ -63,6 +64,7 @@ def login():
 
 @app.route('/<username>/ssh_keys/', methods=['POST'])
 def post_new_ssh_key(username):
+    """ covered by 1_users / `User can add an ssh key` """
     if False:  # TODO: ensure that username exists
         return jsonify({"error": "username does not exist"}), 404
 
@@ -89,6 +91,7 @@ def post_new_ssh_key(username):
 
 @app.route('/<username>/ssh_keys/', methods=['DELETE'])
 def remove_key_from_user(username):
+    """ covered by 1_users / `User can delete an existing key from themselves` """
     if False:  # TODO: ensure user is authed and is self
         return jsonify({"error": "Unauthorized"}), 401
 

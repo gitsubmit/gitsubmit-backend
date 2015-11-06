@@ -13,6 +13,7 @@ Can list user's SSH keys
     And user student1 is logged in
     # this will fail if we can't list keys
     Then get list of keys for student1
+
 User can add an ssh key
     [Tags]  api  database  users  sshkeys
     Given testing webserver is running
