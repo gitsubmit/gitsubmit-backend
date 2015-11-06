@@ -14,25 +14,25 @@ Invalid Signup - Blank User
     [Tags]  not_implemented
     Given Browser is opened to signup page
     When User "" signs up with password "longenoughpass" and email "email"
-    Then login page should be open
+    Then signup page should be open
 
 Invalid Signup - Blank Password
     [Tags]  not_implemented
     Given Browser is opened to signup page
     When User "demo" signs up with password "" and email "email"
-    Then login page should be open
+    Then signup page should be open
 
 Invalid Signup - Blank Email
     [Tags]  not_implemented
     Given Browser is opened to signup page
     When User "demo" signs up with password "longenoughpass" and email ""
-    Then login page should be open
+    Then signup page should be open
 
 Invalid Signup - Password Less Than 6 Characters
     [Tags]  not_implemented
     Given Browser is opened to signup page
     When User "demo" signs up with password "pass" and email "email"
-    Then login page should be open
+    Then signup page should be open
 
 *** Keywords ***
 Browser is opened to signup page
