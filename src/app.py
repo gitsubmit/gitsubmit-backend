@@ -231,6 +231,7 @@ def get_project_owner(class_url, project_url):
 
 @app.route('/classes/<class_url>/projects/', methods=["POST"])
 def new_project(class_url):
+    """ covered by test 2_projects / `Teacher can create new project` """
     project_name = request.form.get("project_name")
     url_name = request.form.get("url_name")
     description = request.form.get("description")

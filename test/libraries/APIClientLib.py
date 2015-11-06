@@ -1,5 +1,6 @@
 import binascii
 import os
+import datetime
 import requests
 from SSHKeyLib import SSHKeyLib
 
@@ -9,6 +10,17 @@ Yes, this filename does not comply with PEP8. Thank robotframework for that.
 """
 
 class APIClientLib(object):
+
+    def create_randomized_project(self, url_root, class_name):
+        randomized_url_name = "test_random_project_" + binascii.b2a_hex(os.urandom(15))[:8]
+        long_name = "A Randomized Project for Testing"
+        project_obj = {"url_name": randomized_url_name, "project_name": long_name, "description": long_name,
+                       "team_based": True, "max_members": 4,
+                       "due_date": (datetime.datetime.now() + datetime.timedelta(days=2)).strftime("%Y-%m-%d")}
+        result = requests.post(url_root+"/classes/" + class_name +"/projects/", data=project_obj)
+        return_obj = {"status_code": result.status_code,
+                      "data": result.json()}
+        return return_obj
 
     def get_project_owner(self, url_root, class_name, project_name):
         project_result = requests.get(url_root+"/classes/"+class_name+"/projects/"+project_name+"/owner/")
