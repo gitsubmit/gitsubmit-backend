@@ -68,7 +68,6 @@ Get list of keys for ${user}
     ${obj}=  list keys for user  ${ROOT_URL}  ${user}
     ${code}=  get from dictionary  ${obj}  status_code
     should be equal as integers  ${code}  200
-    ${obj}=  get list of keys for ${user}
     ${content}=  get from dictionary  ${obj}  data
     ${keys}=  get from dictionary  ${content}  keys
     [Return]  ${keys}
