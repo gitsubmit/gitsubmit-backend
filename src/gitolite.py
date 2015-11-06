@@ -1,6 +1,4 @@
 import hashlib
-import sys
-from config import GITOLITE_ADMIN_PATH
 from pyolite import Pyolite
 import sshpubkeys
 from sshpubkeys import InvalidKeyException
@@ -92,7 +90,6 @@ class GitoliteWrapper(object):
                 # Pyolite's keylist thing only removes by WHOLE KEY file (silly) but
                 with open(key_path) as key_file:
                     key_contents = key_file.read()
-                    sys.stderr.write("OFFENDING KEY: "+str(key_contents))
                 user.keys.remove(key_contents)
                 return True
         return False

@@ -10,6 +10,57 @@ Yes, this filename does not comply with PEP8. Thank robotframework for that.
 
 class APIClientLib(object):
 
+    def get_project_owner(self, url_root, class_name, project_name):
+        project_result = requests.get(url_root+"/classes/"+class_name+"/projects/"+project_name+"/owner/")
+        project_obj = project_result.json()
+        return_obj = {"status_code": project_result.status_code,
+                      "data": project_obj}
+        return return_obj
+
+    def add_teacher_to_class(self, url_root, teacher, class_name):
+        teacher_obj = {"username": teacher}
+        students_result = requests.post(url_root+"/classes/"+class_name+"/teacher/", data=teacher_obj)
+        teacher_obj = students_result.json()
+        return_obj = {"status_code": students_result.status_code,
+                      "data": teacher_obj}
+        return return_obj
+
+    def get_class_owner(self, url_root, class_name):
+        students_result = requests.get(url_root+"/classes/"+class_name+"/owner/")
+        student_obj = students_result.json()
+        return_obj = {"status_code": students_result.status_code,
+                      "data": student_obj}
+        return return_obj
+
+    def get_class_projects(self, url_root, class_name):
+        students_result = requests.get(url_root+"/classes/"+class_name+"/projects/")
+        student_obj = students_result.json()
+        return_obj = {"status_code": students_result.status_code,
+                      "data": student_obj}
+        return return_obj
+
+    def get_class_teachers(self, url_root, class_name):
+        students_result = requests.get(url_root+"/classes/"+class_name+"/teachers/")
+        student_obj = students_result.json()
+        return_obj = {"status_code": students_result.status_code,
+                      "data": student_obj}
+        return return_obj
+
+    def enroll_student_in_class(self, url_root, student, class_name):
+        student_obj = {"username": student}
+        students_result = requests.post(url_root+"/classes/"+class_name+"/student/", data=student_obj)
+        student_obj = students_result.json()
+        return_obj = {"status_code": students_result.status_code,
+                      "data": student_obj}
+        return return_obj
+
+    def list_students_in_class(self, url_rool, class_name):
+        students_result = requests.get(url_rool+"/classes/"+class_name+"/students/")
+        student_obj = students_result.json()
+        return_obj = {"status_code": students_result.status_code,
+                      "data": student_obj}
+        return return_obj
+
     def list_classes(self, url_root):
         classes_result = requests.get(url_root+"/classes/")
         classes_obj = classes_result.json()

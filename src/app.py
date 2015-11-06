@@ -124,12 +124,14 @@ def signup():
 
 @app.route('/classes/')
 def list_classes():
+    """ covered by test 0_classes / `Can list classses` """
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     return jsonify(classes=dbw.get_all_classes())
 
 
 @app.route('/classes/', methods=["POST"])
 def new_class():
+    """ covered by test 0_classes / `Can create classes` """
     class_name = request.form.get("class_name")
     url_name = request.form.get("url_name")
     description = request.form.get("description")
@@ -146,12 +148,14 @@ def new_class():
 
 @app.route('/classes/<class_url>/projects/')
 def list_projects(class_url):
+    """ covered by test 2_projects / `Can list projects in a class` """
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     return jsonify(projects=dbw.get_all_projects_for_class(class_url))
 
 
 @app.route('/classes/<class_url>/owner/')
 def class_owner(class_url):
+    """ covered by test 0_classes / `Can get the owner of a class`"""
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     try:
         class_obj = dbw.get_class_or_error(class_url)
@@ -162,6 +166,7 @@ def class_owner(class_url):
 
 @app.route('/classes/<class_url>/teachers/')
 def class_teachers(class_url):
+    """ covered by test 0_classes / `Can get the teachers of a class`"""
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     try:
         class_obj = dbw.get_class_or_error(class_url)
@@ -172,6 +177,7 @@ def class_teachers(class_url):
 
 @app.route('/classes/<class_url>/students/')
 def class_students(class_url):
+    """ civered by test 0_classes / `Can list students in a class` """
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     try:
         class_obj = dbw.get_class_or_error(class_url)
@@ -182,6 +188,7 @@ def class_students(class_url):
 
 @app.route('/classes/<class_url>/student/', methods=["POST"])
 def add_student(class_url):
+    """ covered by test 0_classes / `Student can enroll in a class` """
     student = request.form.get("username")
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
 
@@ -197,6 +204,7 @@ def add_student(class_url):
 
 @app.route('/classes/<class_url>/teacher/', methods=["POST"])
 def add_teacher(class_url):
+    """ covered by test 0_classes / `Teacher can add other teachers to class they own` """
     teacher = request.form.get("username")
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
 
@@ -212,6 +220,7 @@ def add_teacher(class_url):
 
 @app.route('/classes/<class_url>/projects/<project_url>/owner/')
 def get_project_owner(class_url, project_url):
+    """ covered by test 2_projects / `Can get owner of a project` """
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     try:
         project_obj = dbw.get_project_or_error(class_url, project_url)

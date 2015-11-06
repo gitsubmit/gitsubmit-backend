@@ -63,6 +63,9 @@ if __name__ == "__main__":
     dbw.create_class("intro_to_computers", "Introduction to Computers", "Introduction to Computers description", "teacher1")
     dbw.create_class("adv_computers", "Advanced Computers", "Advanced Computers description", "teacher2")
 
+    dbw.add_student_to_class("intro_to_computers", "student1")
+    dbw.add_student_to_class("adv_computers", "student2")
+
     dbw.create_project("turn_on_a_computer", "Turn on a computer", "Turn on a computer description",
                        "intro_to_computers", False, (datetime.datetime.now() + datetime.timedelta(days=5)).strftime("%Y-%m-%d"), "teacher1")
 
