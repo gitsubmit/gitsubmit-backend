@@ -41,8 +41,9 @@ User cannot delete their last key
     [Tags]  api  database  users  sshkeys
     Given testing webserver is running
     And user student2 is logged in
-    When User removes first key of student2 unsuccessfully
+    When user removes all but one key  ${ROOT_URL}  student2
     Then there should be 1 keys when user asks for a list of student2's keys
+    And cannot remove key from student2
 
 User cannot delete other users keys
     [Tags]  api  database  users  sshkeys  not_implemented

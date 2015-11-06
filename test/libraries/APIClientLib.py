@@ -67,9 +67,14 @@ class APIClientLib(object):
                       "data": post_result.json()}
         return return_obj
 
-    def remove_key_from_user(self, root_url, user, key_to_remove):
+    def remove_key_from_user(self, url_root, user, key_to_remove):
         request_obj = {"pkey": key_to_remove}
-        delete_result = requests.delete(root_url + "/" + user + "/ssh_keys/", data=request_obj)
+        delete_result = requests.delete(url_root + "/" + user + "/ssh_keys/", data=request_obj)
         return_obj = {"status_code": delete_result.status_code,
                       "data": delete_result.json()}
         return return_obj
+
+    def user_removes_all_but_one_key(self, url_root, user):
+        keys_obj = self.list_keys_for_user(url_root, user)
+        for key in keys_obj["data"]["keys"][1:]:
+            self.remove_key_from_user(url_root, user, key)
