@@ -13,7 +13,6 @@ Can list user's SSH keys
     And user student1 is logged in
     # this will fail if we can't list keys
     Then get list of keys for student1
-
 User can add an ssh key
     [Tags]  api  database  users  sshkeys
     Given testing webserver is running
@@ -49,44 +48,48 @@ User cannot delete other users keys
     [Tags]  api  database  users  sshkeys  not_implemented
     Given testing webserver is running
     And user student2 is logged in
-    When User removes first key of student1 unsuccessfully
-    Then there should be 3 keys when user asks for a list of student1's keys
+    Then Cannot remove key from student1
 
 *** Keywords ***
+Cannot remove key from ${user}
+    ${keys_before}=  get number of keys for ${user}
+    User removes first key of ${user} unsuccessfully
+    There should be ${keys_before} keys when user asks for a list of ${user}'s keys
+
 ${user} can add then remove a key
     ${keys_before}=  get number of keys for ${user}
     ${expected_after_add}=  evaluate  ${keys_before} + 1
-    Then ${user} adds a randomized key to their account
+    "${user}" adds a randomized key to their account
     ${actual_after_add}=  get number of keys for ${user}
     should be equal as integers  ${actual_after_add}  ${expected_after_add}
 
-    Then When User removes first key of ${user} successfully
-    Then there should be ${keys_before} keys when user asks for a list of student1's keys
+    User removes first key of ${user} successfully
+    there should be ${keys_before} keys when user asks for a list of student1's keys
 
 Keys for ${user} should not change if they attempt to add a key ${other_user} else already has
     ${other_keys_before}=  get number of keys for ${other_user}
     ${other_expected_after}=  evaluate  ${other_keys_before} + 1
-    When ${other_user} attempts to add preset key 2 to their account successfully
-    Then there should be ${other_expected_after} keys when user asks for a list of ${other_user}'s keys
+    "${other_user}" attempts to add preset key 2 to their account successfully
+    there should be ${other_expected_after} keys when user asks for a list of ${other_user}'s keys
 
     ${keys_before}=  get number of keys for ${other_user}
-    Then When user ${user} is logged in
-    And ${user} attempts to add preset key 2 to their account unsuccessfully
-    Then there should be ${keys_before} keys when user asks for a list of ${user}'s keys
+    user ${user} is logged in
+    "${user}" attempts to add preset key 2 to their account unsuccessfully
+    there should be ${keys_before} keys when user asks for a list of ${user}'s keys
 
 Keys for ${user} should only go up by one if the same key is added twice
     ${keys_before}=  get number of keys for ${user}
     ${expected_after}=  evaluate  ${keys_before} + 1
-    When ${user} attempts to add preset key 1 to their account successfully
-    Then there should be ${expected_after} keys when user asks for a list of ${user}'s keys
+    "${user}" attempts to add preset key 1 to their account successfully
+    there should be ${expected_after} keys when user asks for a list of ${user}'s keys
 
-    And When ${user} attempts to add preset key 1 to their account unsuccessfully
-    Then there should be ${expected_after} keys when user asks for a list of ${user}'s keys
+    "${user}" attempts to add preset key 1 to their account unsuccessfully
+    there should be ${expected_after} keys when user asks for a list of ${user}'s keys
 
 Keys for ${user} should go up by one after adding a randomized ssh key
     ${num_keys_before}=  get number of keys for ${user}
     ${expected_after}=  evaluate  ${num_keys_before} + 1
-    When ${user} adds a randomized key to their account
+    "${user}" adds a randomized key to their account
     ${actual_after}=  get number of keys for ${user}
     should be equal as integers  ${actual_after}  ${expected_after}
 
@@ -125,31 +128,31 @@ There should be ${number_keys} keys when user asks for a list of ${user}'s keys
     # We pre-inserted two classes, so they should be there
     should be equal as integers  ${len_keys}  ${number_keys}
 
-${user} adds a randomized key to their account
+"${user}" adds a randomized key to their account
     ${obj}=  add randomized key to user  ${ROOT_URL}  ${user}
     ${code}=  get from dictionary  ${obj}  status_code
     should be equal as integers  ${code}  200
 
 
-${user} attempts to add preset key 1 to their account successfully
+"${user}" attempts to add preset key 1 to their account successfully
     ${obj}=  add preset key1 to user  ${ROOT_URL}  ${user}
     ${code}=  get from dictionary  ${obj}  status_code
     should be equal as integers  ${code}  200
 
 
-${user} attempts to add preset key 1 to their account unsuccessfully
+"${user}" attempts to add preset key 1 to their account unsuccessfully
     ${obj}=  add preset key1 to user  ${ROOT_URL}  ${user}
     ${code}=  get from dictionary  ${obj}  status_code
     should not be equal as integers  ${code}  200
 
 
-${user} attempts to add preset key 2 to their account successfully
+"${user}" attempts to add preset key 2 to their account successfully
     ${obj}=  add preset key2 to user  ${ROOT_URL}  ${user}
     ${code}=  get from dictionary  ${obj}  status_code
     should be equal as integers  ${code}  200
 
 
-${user} attempts to add preset key 2 to their account unsuccessfully
+"${user}" attempts to add preset key 2 to their account unsuccessfully
     ${obj}=  add preset key2 to user  ${ROOT_URL}  ${user}
     ${code}=  get from dictionary  ${obj}  status_code
     should not be equal as integers  ${code}  200
