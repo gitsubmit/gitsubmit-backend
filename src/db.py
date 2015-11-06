@@ -56,6 +56,14 @@ class DatabaseWrapper(object):
             else:
                 return False
 
+    def update_password(self, username, new_password):
+        db = self.mongo.gitsubmit.users
+        user_doc = db.find_one({"username": username})
+        if user_doc is not None:
+            salt = user_doc["salt"]
+            user_doc["hash"] = b2a_hex(PBKDF2(new_password, salt).read(256))
+            db.update({"_id": user_doc["_id"]}, user_doc)
+
     def get_all_classes(self):
         class_db = self.mongo.gitsubmit.classes
         classes = [cl for cl in class_db.find(projection={"_id": False})]
