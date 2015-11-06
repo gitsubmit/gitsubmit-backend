@@ -24,7 +24,7 @@ class DatabaseWrapper(object):
         self.mongo = MongoClient(port=port)
         self.glpath = gitolite_admin_path
 
-    def create_user(self, username, email, password):
+    def create_user(self, username, email, password, first_name, last_name):
         db = self.mongo.gitsubmit.users
         username_check_doc = db.find_one({"username": username})
         if username_check_doc is not None:
@@ -37,6 +37,8 @@ class DatabaseWrapper(object):
             {
                 "username": username,
                 "email":    email,
+                "first_name": first_name,
+                "last_name": last_name,
                 "salt":     salt,
                 "hash":     b2a_hex(PBKDF2(password, salt).read(256))
             }
