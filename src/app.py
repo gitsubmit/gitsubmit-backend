@@ -122,7 +122,8 @@ def signup():
         return jsonify({"error": "Username is already taken!", "exception": str(e)}), 400
     except EmailAlreadyTakenError as e:
         return jsonify({"error": "Email is already taken!", "exception": str(e)}), 400
-    return jsonify({"result": "success"}), 200
+    result = dbw.login(username, password)
+    return jsonify({"token": result}), 200
 
 
 @app.route('/classes/')

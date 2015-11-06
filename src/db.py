@@ -6,6 +6,7 @@ from os import urandom
 from pymongo import MongoClient
 from pbkdf2 import PBKDF2
 import subprocess
+import jwt
 
 __author__ = ['Tsintsir', 'shawkins']
 
@@ -48,9 +49,9 @@ class DatabaseWrapper(object):
             return False
         else:
             salt = user_doc["salt"]
-            # TODO: Return token
+            # TODO: Better secret handling
             if b2a_hex(PBKDF2(password, salt).read(256)) == user_doc["hash"]:
-                return True
+                return jwt.encode({'username': username, 'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=2)}, 'gitsubmitsecret')
             else:
                 return False
 
