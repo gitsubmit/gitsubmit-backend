@@ -93,7 +93,7 @@ def signup():
     password = request.form.get("password")
     email = request.form.get("email")
     first_name = request.form.get("firstname")
-    last_name = request.form.get("firstname")
+    last_name = request.form.get("lastname")
 
     dbw = DatabaseWrapper()
     try:
