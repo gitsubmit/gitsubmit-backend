@@ -271,3 +271,7 @@ def remove_contributor(username, submission_name, removed_username):
 def get_contributors(username, submission_name):
     dbw = DatabaseWrapper()
     return dbw.get_contributors(username, submission_name)
+
+@app.route('/<username>/submissions/<submission_name>/source/<commit_path>/<filepath>')
+def get_submission_file_or_directory(username, submission_name, commit_path, filepath):
+    pass
