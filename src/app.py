@@ -251,8 +251,9 @@ def new_project(class_url):
         return jsonify({"error": "Class does not exist!", "exception": str(e)}), 404
 
 
-@app.route('/classes/<class_url>/projects/<project_url>/due_date', methods=["POST"])
+@app.route('/classes/<class_url>/projects/<project_url>/due_date/', methods=["POST"])
 def new_project_due_date(class_url, project_url):
+    """ covered by test 2_projects / `Can update due date in a project` """
     due_date = request.form.get("date")
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     return jsonify(project_updated=dbw.update_project_due_date(class_url, project_url, due_date))

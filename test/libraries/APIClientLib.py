@@ -11,6 +11,15 @@ Yes, this filename does not comply with PEP8. Thank robotframework for that.
 
 class APIClientLib(object):
 
+    def update_due_date(self, url_root, class_name, project_name, new_due_date):
+        updated_date_obj = {"date": new_due_date}
+        date_result = requests.post(url_root+"/classes/"+class_name+"/projects/"+project_name+"/due_date/",
+                                    data=updated_date_obj)
+        date_obj = date_result.json()
+        return_obj = {"status_code": date_result.status_code,
+                      "data": date_obj}
+        return return_obj
+
     def create_predefined_project(self, url_root, class_name):
         randomized_url_name = "test_predefined_project"
         long_name = "A Predefined Project for Testing"

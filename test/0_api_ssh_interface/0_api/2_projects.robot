@@ -31,8 +31,19 @@ Cannot create projects with same url
     And user teacher1 is logged in
     Then Number of projects in "adv_computers" should only increase by one when user creates a predefined project twice
 
+Can update due date in a project
+    [Tags]  api  database  classes
+    Given testing webserver is running
+    And user teacher1 is logged in
+    Then Can update the due date for project "use_a_computer" in class "adv_computers" to "2016-08-22"
+
 
 *** Keywords ***
+Can update the due date for project "${project}" in class "${class}" to "${date}"
+    ${obj}=  update due date  ${ROOT_URL}  ${class}  ${project}  ${date}
+    ${code}=  get from dictionary  ${obj}  status_code
+    should be equal as integers  ${code}  200
+
 Number of projects in "${class}" should only increase by one when user creates a predefined project twice
     ${num_projects}=  get number of projects in class "${class}"
     ${expected_after}=  evaluate  ${num_projects} + 1
