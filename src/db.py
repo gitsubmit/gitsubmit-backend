@@ -6,6 +6,7 @@ from os import urandom
 from pymongo import MongoClient
 from pbkdf2 import PBKDF2
 import subprocess
+import jwt
 
 __author__ = ['Tsintsir', 'shawkins']
 
@@ -14,6 +15,7 @@ class EmailAlreadyTakenError(Exception): pass
 class UrlNameAlreadyTakenError(Exception): pass
 class ClassDoesNotExistError(Exception): pass
 class ProjectDoesNotExistError(Exception): pass
+class SubmissionDoesNotExistError(Exception): pass
 
 
 class DatabaseWrapper(object):
@@ -21,7 +23,7 @@ class DatabaseWrapper(object):
     def __init__(self):
         self.mongo = MongoClient()
 
-    def create_user(self, username, email, password):
+    def create_user(self, username, email, password, first_name, last_name):
         db = self.mongo.gitsubmit.users
         username_check_doc = db.find_one({"username": username})
         if username_check_doc is not None:
@@ -34,6 +36,8 @@ class DatabaseWrapper(object):
             {
                 "username": username,
                 "email":    email,
+                "first_name": first_name,
+                "last_name": last_name,
                 "salt":     salt,
                 "hash":     b2a_hex(PBKDF2(password, salt).read(256))
             }
@@ -46,8 +50,9 @@ class DatabaseWrapper(object):
             return False
         else:
             salt = user_doc["salt"]
+            # TODO: Better secret handling
             if b2a_hex(PBKDF2(password, salt).read(256)) == user_doc["hash"]:
-                return True
+                return jwt.encode({'username': username, 'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=2)}, 'gitsubmitsecret')
             else:
                 return False
 
@@ -56,6 +61,14 @@ class DatabaseWrapper(object):
         user_doc = db.find_one({"username": username})
         if user_doc is not None:
             user_doc["email"] = new_email
+            db.update({"_id": user_doc["_id"]}, user_doc)
+
+    def update_password(self, username, new_password):
+        db = self.mongo.gitsubmit.users
+        user_doc = db.find_one({"username": username})
+        if user_doc is not None:
+            salt = user_doc["salt"]
+            user_doc["hash"] = b2a_hex(PBKDF2(new_password, salt).read(256))
             db.update({"_id": user_doc["_id"]}, user_doc)
 
     def get_all_classes(self):
@@ -229,3 +242,23 @@ class DatabaseWrapper(object):
         if "due" in project_obj.keys() and type(project_obj["due"]) is datetime:
             project_obj["due"] = project_obj["due"].strftime(TIME_FORMAT)
         return project_obj
+
+
+    # TODO: implement this function. Modify submission object and repo
+    # Raised errors should be handled in the API as well, so don't forget!
+    def add_contributor(self, username, submission_name, new_contributor):
+        return False
+
+
+    # TODO: implement this function. Modify submission object and repo privileges
+    # Raised errors should be handled in the API as well, so don't forget!
+    def remove_contributor(self, username, submission_name, removed_contributor):
+        return False
+
+
+    def get_contributors(self, username, submission_name):
+        submission_db = self.mongo.gitsubmit.submissions
+        submission_doc = submission_db.find_one({"owner": username, "long_name": submission_name})
+        if submission_doc is None:
+            raise SubmissionDoesNotExistError(str(username) + ": " + str(submission_name))
+        return submission_doc["contributors"]
