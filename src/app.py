@@ -102,6 +102,14 @@ def signup():
     result = dbw.login(username, password)
     return jsonify({"token": result}), 200
 
+@app.route('/<username>/update_password/<temp_password_key>/', methods=['POST'])
+def update_user_password():
+    dbw = DatabaseWrapper()
+    username = "konrad"
+    new_password = request.form.get("password")
+    dbw.update_password(username, new_password)
+    return jsonify(password_added=new_password)
+
 
 @app.route('/classes/')
 def list_classes():
