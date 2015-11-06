@@ -36,8 +36,7 @@ User can delete an existing key from themselves
     [Tags]  api  database  users  sshkeys
     Given testing webserver is running
     And user student1 is logged in
-    When User removes first key of student1 successfully
-    Then there should be 3 keys when user asks for a list of student1's keys
+    Then student1 can add then remove a key
 
 User cannot delete their last key
     [Tags]  api  database  users  sshkeys
@@ -54,6 +53,16 @@ User cannot delete other users keys
     Then there should be 3 keys when user asks for a list of student1's keys
 
 *** Keywords ***
+${user} can add then remove a key
+    ${keys_before}=  get number of keys for ${user}
+    ${expected_after_add}=  evaluate  ${keys_before} + 1
+    Then ${user} adds a randomized key to their account
+    ${actual_after_add}=  get number of keys for ${user}
+    should be equal as integers  ${actual_after_add}  ${expected_after_add}
+
+    Then When User removes first key of ${user} successfully
+    Then there should be ${keys_before} keys when user asks for a list of student1's keys
+
 Keys for ${user} should not change if they attempt to add a key ${other_user} else already has
     ${other_keys_before}=  get number of keys for ${other_user}
     ${other_expected_after}=  evaluate  ${other_keys_before} + 1
@@ -64,7 +73,6 @@ Keys for ${user} should not change if they attempt to add a key ${other_user} el
     Then When user ${user} is logged in
     And ${user} attempts to add preset key 2 to their account unsuccessfully
     Then there should be ${keys_before} keys when user asks for a list of ${user}'s keys
-
 
 Keys for ${user} should only go up by one if the same key is added twice
     ${keys_before}=  get number of keys for ${user}
