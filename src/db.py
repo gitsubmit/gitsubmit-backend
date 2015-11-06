@@ -56,6 +56,13 @@ class DatabaseWrapper(object):
             else:
                 return False
 
+    def update_email(self, username, new_email):
+        db = self.mongo.gitsubmit.users
+        user_doc = db.find_one({"username": username})
+        if user_doc is not None:
+            user_doc["email"] = new_email
+            db.update({"_id": user_doc["_id"]}, user_doc)
+
     def update_password(self, username, new_password):
         db = self.mongo.gitsubmit.users
         user_doc = db.find_one({"username": username})

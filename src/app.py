@@ -86,6 +86,14 @@ def remove_key_from_user(username):
         return jsonify({"error": "Key was not found under user!", "exception": None}), 404
     return list_ssh_keys(username)
 
+@app.route('/<username>/update/', methods=['POST'])
+def update_user_info():
+    dbw = DatabaseWrapper()
+    username = "konrad" #TODO: get currently logged in user
+    new_email = request.form.get("email")
+    dbw.update_email(username, new_email)
+    return jsonify(email_added=new_email)
+
 
 @app.route('/signup/', methods=['POST'])
 def signup():
