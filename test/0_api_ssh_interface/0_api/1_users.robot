@@ -11,36 +11,26 @@ Can list user's SSH keys
     [Tags]  api  database  users  sshkeys
     Given testing webserver is running
     And user student1 is logged in
-    Then there should be 1 keys when user asks for a list of student1's keys
+    # this will fail if we can't list keys
+    Then get list of keys for student1
 
 User can add an ssh key
     [Tags]  api  database  users  sshkeys
     Given testing webserver is running
     And user student1 is logged in
-    When student1 adds a randomized key to their account
-    Then there should be 2 keys when user asks for a list of student1's keys
-    And there should be 1 keys when user asks for a list of student2's keys
+    Then keys for student1 should go up by one after adding a randomized ssh key
 
 User cannot add the same key twice
     [Tags]  api  database  users  sshkeys
     Given testing webserver is running
     And user student1 is logged in
-    When student1 attempts to add preset key 1 to their account successfully
-    Then there should be 3 keys when user asks for a list of student1's keys
-
-    And When student1 attempts to add preset key 1 to their account unsuccessfully
-    Then there should be 3 keys when user asks for a list of student1's keys
+    Then Keys for student1 should only go up by one if the same key is added twice
 
 User cannot add a key if another user already has that key
     [Tags]  api  database  users  sshkeys
     Given testing webserver is running
     And user student1 is logged in
-    When student1 attempts to add preset key 2 to their account successfully
-    Then there should be 4 keys when user asks for a list of student1's keys
-
-    Then When user student2 is logged in
-    And student2 attempts to add preset key 2 to their account unsuccessfully
-    Then there should be 1 keys when user asks for a list of student2's keys
+    Then Keys for student1 should not change if they attempt to add a key student2 else already has
 
 User can delete an existing key from themselves
     [Tags]  api  database  users  sshkeys
@@ -64,6 +54,34 @@ User cannot delete other users keys
     Then there should be 3 keys when user asks for a list of student1's keys
 
 *** Keywords ***
+Keys for ${user} should not change if they attempt to add a key ${other_user} else already has
+    ${other_keys_before}=  get number of keys for ${other_user}
+    ${other_expected_after}=  evaluate  ${other_keys_before} + 1
+    When ${other_user} attempts to add preset key 2 to their account successfully
+    Then there should be ${other_expected_after} keys when user asks for a list of ${other_user}'s keys
+
+    ${keys_before}=  get number of keys for ${other_user}
+    Then When user ${user} is logged in
+    And ${user} attempts to add preset key 2 to their account unsuccessfully
+    Then there should be ${keys_before} keys when user asks for a list of ${user}'s keys
+
+
+Keys for ${user} should only go up by one if the same key is added twice
+    ${keys_before}=  get number of keys for ${user}
+    ${expected_after}=  evaluate  ${keys_before} + 1
+    When ${user} attempts to add preset key 1 to their account successfully
+    Then there should be ${expected_after} keys when user asks for a list of ${user}'s keys
+
+    And When ${user} attempts to add preset key 1 to their account unsuccessfully
+    Then there should be ${expected_after} keys when user asks for a list of ${user}'s keys
+
+Keys for ${user} should go up by one after adding a randomized ssh key
+    ${num_keys_before}=  get number of keys for ${user}
+    ${expected_after}=  evaluate  ${num_keys_before} + 1
+    When ${user} adds a randomized key to their account
+    ${actual_after}=  get number of keys for ${user}
+    should be equal as integers  ${actual_after}  ${expected_after}
+
 Get list of keys for ${user}
     ${obj}=  list keys for user  ${ROOT_URL}  ${user}
     ${code}=  get from dictionary  ${obj}  status_code
