@@ -42,17 +42,51 @@ User cannot add a key if another user already has that key
     And student2 attempts to add preset key 2 to their account unsuccessfully
     Then there should be 1 keys when user asks for a list of student2's keys
 
+User can delete an existing key from themselves
+    [Tags]  api  database  users  sshkeys
+    Given testing webserver is running
+    And user student1 is logged in
+    When User removes first key of student1 successfully
+    Then there should be 3 keys when user asks for a list of student1's keys
+
+User cannot delete other users keys
+    [Tags]  api  database  users  sshkeys  not_implemented
+    Given testing webserver is running
+    And user student2 is logged in
+    When User removes first key of student1 unsuccessfully
+    Then there should be 3 keys when user asks for a list of student1's keys
 
 *** Keywords ***
-Get number of keys for ${user}
+Get list of keys for ${user}
     ${obj}=  list keys for user  ${ROOT_URL}  ${user}
     ${code}=  get from dictionary  ${obj}  status_code
     should be equal as integers  ${code}  200
+    ${obj}=  get list of keys for ${user}
     ${content}=  get from dictionary  ${obj}  data
     ${keys}=  get from dictionary  ${content}  keys
+    [Return]  ${keys}
+
+Get number of keys for ${user}
+    ${keys}=  get list of keys for ${user}
     ${len_keys}=  get length  ${keys}
     [Return]  ${len_keys}
 
+Get contents of first key for ${user}
+    ${keys}=  get list of keys for ${user}
+    ${content}=  get from list  ${keys}  0
+    [Return]  ${content}
+
+User removes first key of ${user} successfully
+    ${key}=  get contents of first key for ${user}
+    ${obj}=  remove key from user  ${ROOT_URL}  ${user}  ${key}
+    ${code}=  get from dictionary  ${obj}  status_code
+    should be equal as integers  ${code}  200
+
+User removes first key of ${user} unsuccessfully
+    ${key}=  get contents of first key for ${user}
+    ${obj}=  remove key from user  ${ROOT_URL}  ${user}  ${key}
+    ${code}=  get from dictionary  ${obj}  status_code
+    should not be equal as integers  ${code}  200
 
 There should be ${number_keys} keys when user asks for a list of ${user}'s keys
     ${len_keys}=  Get number of keys for ${user}
@@ -87,4 +121,5 @@ ${user} attempts to add preset key 2 to their account unsuccessfully
     ${obj}=  add preset key2 to user  ${ROOT_URL}  ${user}
     ${code}=  get from dictionary  ${obj}  status_code
     should not be equal as integers  ${code}  200
+
 
