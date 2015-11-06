@@ -55,6 +55,7 @@ class DatabaseWrapper(object):
         db = self.mongo.gitsubmit.users
         user_doc = db.find_one({"username": username})
         if user_doc is not None:
+            user_doc["email"] = new_email
             db.update({"_id": user_doc["_id"]}, user_doc)
 
     def get_all_classes(self):
