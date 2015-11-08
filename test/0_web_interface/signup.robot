@@ -1,6 +1,5 @@
 *** Settings ***
 Resource          ../resources/resource.robot
-Library           ../libraries/SmokeLib.py
 Test Teardown     Close Browser
 
 *** Test Cases ***
