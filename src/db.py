@@ -239,6 +239,10 @@ class DatabaseWrapper(object):
 
         return submission_db.insert_one(submission_obj)
 
+    def delete_submission(self, long_name, owner):
+        submission_db = self.mongo.gitsubmit.submissions
+
+
     def fix_dates_in_project_obj(self, project_obj):
         if "due" in project_obj.keys() and type(project_obj["due"]) is datetime:
             project_obj["due"] = project_obj["due"].strftime(TIME_FORMAT)
