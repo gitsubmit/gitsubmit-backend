@@ -12,6 +12,7 @@ TESTSERVERPID=$(cat staging_pid) || true
 kill $TESTSERVERPID
 
 rm bogus_key_*
+rm **/bogus_key_*
 
 # in case they weren't stopped last time
 docker stop gitotestname
