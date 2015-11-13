@@ -24,7 +24,6 @@ class GitRepo(object):
         self.git = Git(self.repo_path)
 
     def get_file_or_directory(self, commit_or_branch, path):
-        # Incomplete method 1
         if commit_or_branch in self.repo.branches:
             commit = self.repo.branches[commit_or_branch].commit
         else:
@@ -32,17 +31,21 @@ class GitRepo(object):
         tree = commit.tree
         file = tree[path]
 
-        print file.data_stream.read()
+        object = {
+            'type': file.type
+        }
 
-        # complete but not as good method 2
-        commit_string = commit.hexsha
-        callpipe = subprocess.Popen("git show "+commit_string+":"+path, shell=True, cwd=self.repo_path,
-                                    stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        out, err = callpipe.communicate()
-        if out.startswith("tree "+commit_string):
-            print "this is a directory"
-        else:
-            print "this is a file"
-        print out
-g = GitRepo("/Users/shawkins/Code/gitsubmit")
-g.get_file_or_directory("f94e9fb83424", "src/config.py")
+        if file.type == "tree":
+            object['file_list'] = []
+            for i in file:
+                print i.name
+                object['file_list'].append({'type': i.type, 'name': i.name})
+        elif file.type == "blob":
+            object['content'] = file.data_stream.read()
+
+        return object
+
+
+# g = GitRepo("/Users/shawkins/Code/gitsubmit")
+# print g.get_file_or_directory("f94e9fb83424", "test/0_web_interface")
+# print g.get_file_or_directory("f94e9fb83424", "test/0_web_interface/login.robot")

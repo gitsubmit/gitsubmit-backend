@@ -1,8 +1,10 @@
+
 __authors__ = ["shawkins", "Tsintsir", "sonph", "LeBat"]  # add yourself!
 
 # internal (project libs)
 from config import GITOLITE_ADMIN_PATH
 from db import UsernameAlreadyTakenError, EmailAlreadyTakenError
+from git_browser import GitRepo
 from gitolite import GitoliteWrapper, UserDoesNotExistError, KeyDoesNotExistError, \
     CannotDeleteOnlyKeyError, KeyAlreadyExistsError
 from db import  ClassDoesNotExistError, UrlNameAlreadyTakenError, DatabaseWrapper, ProjectDoesNotExistError
@@ -272,6 +274,9 @@ def get_contributors(username, submission_name):
     dbw = DatabaseWrapper()
     return dbw.get_contributors(username, submission_name)
 
+
 @app.route('/<username>/submissions/<submission_name>/source/<commit_path>/<filepath>')
 def get_submission_file_or_directory(username, submission_name, commit_path, filepath):
-    pass
+    git_repo_path = username + "/submissions/" + submission_name
+    repo = GitRepo('/home/git/repositories/' + git_repo_path)
+    object = repo.get_file_or_directory(commit_path, filepath)
