@@ -10,9 +10,9 @@ rmdir temp/repositories
 
 # in case they weren't stopped last time
 docker stop gitotestname
-docker rm gitotestname
+docker rm -v gitotestname
 docker stop mongotestname
-docker rm mongotestname
+docker rm -v mongotestname
 
 set -e # exit with non-zero exit codes immediately
 if [ "$local_instance" = "yes" ]; then
@@ -81,9 +81,9 @@ echo "!!!!!!!!!!!!!!!"
 kill $TESTSERVERPID
 
 docker stop gitotestname
-docker rm gitotestname
+docker rm -v gitotestname
 docker stop mongotestname
-docker rm mongotestname
+docker rm -v mongotestname
 
 cd $TEST_PATH
 rm bogus_key_*
