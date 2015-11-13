@@ -133,6 +133,13 @@ class DatabaseWrapper(object):
 
         return class_db.insert_one(class_obj)
 
+    def update_class_info(self, url_name, new_description):
+        class_obj = self.get_project_or_error(url_name, new_description)
+
+        class_obj["description"] = new_description
+        class_db = self.mongo.gitsubmit.classes
+        class_db.update({"url_name": url_name}, class_obj)
+
     def create_project(self, url_name, long_name, description, parent_class_url_name, is_team_based, due_date, owner, max_team_size=4):
         """
         :param url_name: The raw project url name. Do not include the parent class or /'es!
@@ -192,6 +199,13 @@ class DatabaseWrapper(object):
         project_db = self.mongo.gitsubmit.projects
         project_db.update({"url_name": project_url}, project_obj)
         return self.fix_dates_in_project_obj(project_obj)
+
+    def update_project_info(self, class_url, project_url, new_description):
+        project_obj = self.get_project_or_error(class_url, project_url)
+
+        project_obj["description"] = new_description
+        project_db = self.mongo.gitsubmit.projects
+        project_db.update({"url_name": project_url}, project_obj)
 
     def create_submission(self, url_name, long_name, parent_project_url, owner):
         """
