@@ -135,7 +135,7 @@ def signup():
 
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     try:
-        dbw.create_user(username, password,email, first_name, last_name)
+        dbw.create_user(username, email, password, first_name, last_name)
     except UsernameAlreadyTakenError as e:
         return jsonify({"error": "Username is already taken!", "exception": str(e)}), 400
     except EmailAlreadyTakenError as e:
