@@ -241,6 +241,10 @@ class DatabaseWrapper(object):
 
     def delete_submission(self, long_name, owner):
         submission_db = self.mongo.gitsubmit.submissions
+        submission_obj = db.find({"long_name": long_name, "owner": owner})
+        
+        if submission_obj is not None:
+            submission_db.drop(submission_db)
 
 
     def fix_dates_in_project_obj(self, project_obj):
