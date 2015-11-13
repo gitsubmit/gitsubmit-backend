@@ -87,3 +87,12 @@ class LocalActionsLib(object):
         print out, err
         if process.returncode != 0:
             raise Exception("Untracked files exist! See output")
+
+    def do_get_filesystem_from_docker(self, working_dir):
+        process = subprocess.Popen('docker cp gitotestname:/home/git/repositories .', shell=True, cwd=working_dir,
+                                   stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        out, err = process.communicate()
+        print out, err
+        if process.returncode != 0:
+            raise Exception("Could not copy from docker! see output")
+
