@@ -10,7 +10,7 @@ Library           Selenium2Library
 Library           ../libraries/HTTPClientLib.py
 
 *** Variables ***
-${SERVER}         localhost:5555
+${SERVER}         localhost:5556
 ${BROWSER}        Chrome
 ${DELAY}          0
 ${VALID USER}     demo
