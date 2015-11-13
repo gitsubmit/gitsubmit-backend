@@ -76,8 +76,9 @@ docker cp gitotestname:/home/git/repositories .
 
 echo "curling"
 echo "!!!!!!!!!!!!!!!"
-curl -i http://localhost:5555/classes/test_class/projects/test_project/source/master/some_silly_file.txt
-curl -i http://localhost:5555/classes/test_class/projects/test_project/source/$LAST_COMMIT/some_silly_file.txt
+curl -i http://localhost:5555/classes/test_class/projects/test_project/source/master/file1.txt
+curl -i http://localhost:5555/classes/test_class/projects/test_project/source/master/dir_a
+curl -i http://localhost:5555/classes/test_class/projects/test_project/source/master/dir_a/file_a1.txt
 
 echo "!!!!!!!!!!!!!!!"
 kill $TESTSERVERPID
