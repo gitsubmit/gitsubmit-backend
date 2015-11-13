@@ -17,6 +17,8 @@ class LocalActionsLib(object):
                                    stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = process.communicate()
         print out, err
+        if process.returncode != 0:
+            raise Exception("Could not call 'git clone'")
 
     def clone_known_project(self, working_dir):
         self.clone_repo("test_class/test_project", working_dir=working_dir, as_teacher=True)

@@ -72,18 +72,6 @@ export PYTHONPATH=$(readlink -f libraries):$(readlink -f resources):$PYTHONPATH
 xvfb-run --server-args="-screen 0, 1920x1080x24" python -m robot.run --noncritical not_implemented --variable TEMP_PATH:$TEMP_PATH .
 
 cd $TEMP_PATH
-# First let's just see if this works...
-git clone test_gitsubmit_repo_as_teacher:test_class/test_project
-cd test_project
-echo "this is a silly file" > some_silly_file.txt
-git add some_silly_file.txt
-git commit -m "adding a commit"
-echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-git push origin master
-echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-LAST_COMMIT=$(git log -n 1 --pretty=format:"%H")
-
-cd $TEMP_PATH
 docker cp gitotestname:/home/git/repositories .
 
 echo "curling"
