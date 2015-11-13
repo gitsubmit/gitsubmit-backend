@@ -171,7 +171,7 @@ def new_class():
 @app.route('/classes/<class_url>/update_info/')
 def update_class_description(class_url):
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
-    new_description = request.from.get("description")
+    new_description = request.form.get("description")
     dbw.update_class_info(class_url, new_description)
     return jsonify(description_added=new_description)
 
