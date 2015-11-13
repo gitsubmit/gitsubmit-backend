@@ -10,6 +10,7 @@ from gitolite import GitoliteWrapper, UserDoesNotExistError, KeyDoesNotExistErro
 from db import  ClassDoesNotExistError, UrlNameAlreadyTakenError, DatabaseWrapper, ProjectDoesNotExistError
 
 # base (python packages)
+from email.utils import parseaddr
 
 # external (pip packages)
 from flask import Flask, jsonify, request, Response
@@ -125,6 +126,10 @@ def signup():
     username = request.form.get("username")
     password = request.form.get("password")
     email = request.form.get("email")
+    if '@' not in parseaddr(email)[1]:
+        return jsonify({"error": "Invalid email address: "+str(email)})
+    if len(password) < 8:
+        return jsonify({"error": "Invalid password; must be 8 characters or more"})
     first_name = request.form.get("firstname")
     last_name = request.form.get("lastname")
 
