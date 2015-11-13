@@ -77,4 +77,3 @@ cd ../test
 export PYTHONPATH=$(readlink -f libraries):$(readlink -f resources):$PYTHONPATH
 xvfb-run --server-args="-screen 0, 1920x1080x24" python -m robot.run --noncritical not_implemented --variable TEMP_PATH:$TEMP_PATH .
 
-
