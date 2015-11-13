@@ -168,6 +168,12 @@ def new_class():
     except UrlNameAlreadyTakenError as e:
         return jsonify({"error": "Url name was already taken!", "exception": str(e)}), 403
 
+@app.route('/classes/<class_url>/update_info/')
+def update_class_description(class_url):
+    dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
+    new_description = request.from.get("description")
+    dbw.update_class_info(class_url, new_description)
+    return jsonify(description_added=new_description)
 
 @app.route('/classes/<class_url>/projects/')
 def list_projects(class_url):
@@ -281,6 +287,12 @@ def new_project_due_date(class_url, project_url):
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     return jsonify(project_updated=dbw.update_project_due_date(class_url, project_url, due_date))
 
+@app.route('/class/<class_url>/projects/<project_url>/update_description/')
+def update_project_info(class_url, project_url):
+    new_description = request.form.get("description")
+    dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
+    dbw.update_project_info(class_url, project_url, new_description)
+    return jsonify(description_added=new_description)
 
 @app.route('/classes/<class_name>/projects/<project_name>/make_submission/', methods=["POST"])
 def make_submission(class_name, project_name):
