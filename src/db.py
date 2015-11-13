@@ -244,18 +244,22 @@ class DatabaseWrapper(object):
             project_obj["due"] = project_obj["due"].strftime(TIME_FORMAT)
         return project_obj
 
+    def get_submission_or_error(self, gitolite_url):
+        submission_db = self.mongo.gitsubmit.submissions
+        submission_obj = submission_db.find_one({"gitolite_url": gitolite_url}, projection={"_id": False})
+        if submission_obj is None:
+            raise SubmissionDoesNotExistError(str(gitolite_url))
+        return submission_obj
 
     # TODO: implement this function. Modify submission object and repo
     # Raised errors should be handled in the API as well, so don't forget!
     def add_contributor(self, username, submission_name, new_contributor):
         return False
 
-
     # TODO: implement this function. Modify submission object and repo privileges
     # Raised errors should be handled in the API as well, so don't forget!
     def remove_contributor(self, username, submission_name, removed_contributor):
         return False
-
 
     def get_contributors(self, username, submission_name):
         submission_db = self.mongo.gitsubmit.submissions
