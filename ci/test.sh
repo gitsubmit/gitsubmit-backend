@@ -30,8 +30,8 @@ fi
 pip install -r requirements.txt
 
 # Start up a docker instance for the gitolite repo
-docker run --name gitotestname -p 3022:22 -e SSH_KEY="$(cat /home/git/.ssh/id_rsa.pub)" elsdoerfer/gitolite &
-docker run --name mongotestname -p 27117:27017 -e AUTH=no tutum/mongodb &
+nohup docker run --name gitotestname -p 3022:22 -e SSH_KEY="$(cat /home/git/.ssh/id_rsa.pub)" elsdoerfer/gitolite &
+nohup docker run --name mongotestname -p 27117:27017 -e AUTH=no tutum/mongodb &
 
 sleep 10 # let docker warm up
 
@@ -65,7 +65,7 @@ python ci/fill_db_with_fake_data.py -p 27117 -pyo $GL_PATH
 
 cd src
 # start a testing server on port 5555
-/virtualenvs/gitsubmit_env/bin/gunicorn --access-logfile /srv/logs/staging_access.log -w 1 -b :5555 "app:configured_main('$GL_PATH', '$REPO_PATH', 27117)" &
+nohup /virtualenvs/gitsubmit_env/bin/gunicorn --access-logfile /srv/logs/staging_access.log -w 1 -b :5555 "app:configured_main('$GL_PATH', '$REPO_PATH', 27117)" &
 
 NEWTESTSERVERPID=$!
 echo $NEWTESTSERVERPID > $TEST_PATH/staging_pid
