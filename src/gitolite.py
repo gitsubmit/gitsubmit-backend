@@ -1,5 +1,4 @@
 import hashlib
-from config import GITOLITE_ADMIN_PATH
 from pyolite import Pyolite
 import sshpubkeys
 from sshpubkeys import InvalidKeyException

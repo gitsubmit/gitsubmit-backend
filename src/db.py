@@ -1,6 +1,6 @@
 from datetime import datetime
 from gitolite import GitoliteWrapper
-from config import GITOLITE_ADMIN_PATH, TIME_FORMAT
+from config import TIME_FORMAT
 from binascii import b2a_hex
 from os import urandom
 from pymongo import MongoClient
@@ -20,10 +20,11 @@ class SubmissionDoesNotExistError(Exception): pass
 
 class DatabaseWrapper(object):
 
-    def __init__(self):
-        self.mongo = MongoClient()
+    def __init__(self, gitolite_admin_path, port=None):
+        self.mongo = MongoClient(port=port)
+        self.glpath = gitolite_admin_path
 
-    def create_user(self, username, email, password):
+    def create_user(self, username, email, password, first_name, last_name):
         db = self.mongo.gitsubmit.users
         username_check_doc = db.find_one({"username": username})
         if username_check_doc is not None:
@@ -31,11 +32,13 @@ class DatabaseWrapper(object):
         email_check_doc = db.find_one({"email": email})
         if email_check_doc is not None:
             raise EmailAlreadyTakenError("That email address is already taken.")
-        salt = urandom(256)
+        salt = urandom(256).encode('base64')
         db.insert_one(
             {
                 "username": username,
                 "email":    email,
+                "first_name": first_name,
+                "last_name": last_name,
                 "salt":     salt,
                 "hash":     b2a_hex(PBKDF2(password, salt).read(256))
             }
@@ -53,6 +56,21 @@ class DatabaseWrapper(object):
                 return jwt.encode({'username': username, 'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=2)}, 'gitsubmitsecret')
             else:
                 return False
+
+    def update_email(self, username, new_email):
+        db = self.mongo.gitsubmit.users
+        user_doc = db.find_one({"username": username})
+        if user_doc is not None:
+            user_doc["email"] = new_email
+            db.update({"_id": user_doc["_id"]}, user_doc)
+
+    def update_password(self, username, new_password):
+        db = self.mongo.gitsubmit.users
+        user_doc = db.find_one({"username": username})
+        if user_doc is not None:
+            salt = user_doc["salt"]
+            user_doc["hash"] = b2a_hex(PBKDF2(new_password, salt).read(256))
+            db.update({"_id": user_doc["_id"]}, user_doc)
 
     def get_all_classes(self):
         class_db = self.mongo.gitsubmit.classes
@@ -97,7 +115,7 @@ class DatabaseWrapper(object):
     def create_class(self, url_name, long_name, description, owner):
         class_db = self.mongo.gitsubmit.classes
 
-        gw = GitoliteWrapper(GITOLITE_ADMIN_PATH)
+        gw = GitoliteWrapper(self.glpath)
         # Make sure the owner exists
         gw.get_user_or_error(owner)
 
@@ -139,7 +157,7 @@ class DatabaseWrapper(object):
         if parent_class_obj is None:
             raise ClassDoesNotExistError(str(parent_class_url_name))
 
-        gw = GitoliteWrapper(GITOLITE_ADMIN_PATH)
+        gw = GitoliteWrapper(self.glpath)
         # Make sure the owner exists
         gw.get_user_or_error(owner)
 
@@ -198,9 +216,9 @@ class DatabaseWrapper(object):
         parent_class_obj = class_db.find_one({"url_name": parent_project_obj["parent"]})
         if parent_class_obj is None:
             raise ClassDoesNotExistError(str(parent_project_obj["parent"]))
-        parent_class_url = parent_class_obj
+        parent_class_url = parent_class_obj["url_name"]
 
-        gw = GitoliteWrapper(GITOLITE_ADMIN_PATH)
+        gw = GitoliteWrapper(self.glpath)
         # Make sure the owner exists
         gw.get_user_or_error(owner)
 
