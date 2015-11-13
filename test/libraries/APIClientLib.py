@@ -47,6 +47,7 @@ class APIClientLib(object):
         project_obj = project_result.json()
         return_obj = {"status_code": project_result.status_code,
                       "data": project_obj}
+        print return_obj
         return return_obj
 
     def get_project_owner(self, url_root, class_name, project_name):
