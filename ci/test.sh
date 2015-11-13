@@ -71,13 +71,6 @@ cd ../test
 export PYTHONPATH=$(readlink -f libraries):$(readlink -f resources):$PYTHONPATH
 xvfb-run --server-args="-screen 0, 1920x1080x24" python -m robot.run --noncritical not_implemented --variable TEMP_PATH:$TEMP_PATH .
 
-echo "curling"
-echo "!!!!!!!!!!!!!!!"
-curl -i http://localhost:5555/classes/test_class/projects/test_project/source/master/file1.txt
-curl -i http://localhost:5555/classes/test_class/projects/test_project/source/master/dir_a
-curl -i http://localhost:5555/classes/test_class/projects/test_project/source/master/dir_a/file_a1.txt
-
-echo "!!!!!!!!!!!!!!!"
 kill $TESTSERVERPID
 
 docker stop gitotestname
