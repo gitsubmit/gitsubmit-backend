@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+TEST_PATH=$(pwd)
+yes | rm -r temp || true
+mkdir temp
+mkdir temp/repositories
+TEMP_PATH=$(readlink -f temp/)
+REPO_PATH=$(readlink -f temp/repositories)
+rmdir temp/repositories
+
 # in case they weren't stopped last time
 docker stop gitotestname
 docker rm gitotestname
@@ -31,11 +39,9 @@ sleep 10 # let docker warm up
 # Hostname api.gitsubmit.com
 # Port 3022
 
-yes | rm -r gitolite-admin || true
+cd $TEMP_PATH
 git clone gitolite_test_git:gitolite-admin
 GL_PATH=$(readlink -f gitolite-admin/)
-TEST_PATH=$(pwd)
-
 
 # do the setup we need for pyolite to work
 cd $GL_PATH
@@ -54,7 +60,7 @@ python ci/fill_db_with_fake_data.py -p 27117 -pyo $GL_PATH
 
 cd src
 # start a testing server on port 5555
-/virtualenvs/gitsubmit_env/bin/gunicorn --access-logfile /srv/logs/staging_access.log -w 1 -b :5555 "app:configured_main('$GL_PATH', 27117)" &
+/virtualenvs/gitsubmit_env/bin/gunicorn --access-logfile /srv/logs/staging_access.log -w 1 -b :5555 "app:configured_main('$GL_PATH', '$REPO_PATH', 27117)" &
 
 TESTSERVERPID=$!
 echo $TESTSERVERPID > ../staging_pid
@@ -63,7 +69,29 @@ sleep 3 # let gunicorn warm up
 cd ../test
 # Run tests with an X virtual frame buffer
 export PYTHONPATH=$(readlink -f libraries):$(readlink -f resources):$PYTHONPATH
-xvfb-run --server-args="-screen 0, 1920x1080x24" python -m robot.run --noncritical not_implemented .
+# xvfb-run --server-args="-screen 0, 1920x1080x24" python -m robot.run --noncritical not_implemented .
+
+cd $TEMP_PATH
+# First let's just see if this works...
+git clone test_gitsubmit_repo_as_teacher:test_class/test_project
+cd test_project
+echo "this is a silly file" > some_silly_file.txt
+git add some_silly_file.txt
+git commit -m "adding a commit"
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+git push origin master
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+LAST_COMMIT=$(git log -n 1 --pretty=format:"%H")
+
+cd $TEMP_PATH
+docker cp gitotestname:/home/git/repositories .
+
+echo "curling"
+echo "!!!!!!!!!!!!!!!"
+curl -i http://localhost:5555/classes/test_class/projects/test_project/source/master/some_silly_file.txt
+curl -i http://localhost:5555/classes/test_class/projects/test_project/source/$LAST_COMMIT/some_silly_file.txt
+
+echo "!!!!!!!!!!!!!!!"
 kill $TESTSERVERPID
 
 docker stop gitotestname
@@ -71,5 +99,6 @@ docker rm gitotestname
 docker stop mongotestname
 docker rm mongotestname
 
-cd ..
+cd $TEST_PATH
 rm bogus_key_*
+
