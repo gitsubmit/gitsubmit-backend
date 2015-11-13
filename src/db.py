@@ -263,3 +263,21 @@ class DatabaseWrapper(object):
         if submission_doc is None:
             raise SubmissionDoesNotExistError(str(username) + ": " + str(submission_name))
         return submission_doc["contributors"]
+
+
+    def get_projects(self, username):
+        project_db = self.mongo.gitsubmit.projects
+        resultCursor = project_db.find({"owner": username})
+        return resultCursor.toArray()
+
+
+    def get_submissions(self, username):
+        submission_db = self.mongo.gitsubmit.submissions
+        resultCursor = submission_db.find( { "$or": [ {"owner": username}, {"contributors": username} ] })
+        return resultCursor.toArray()
+
+
+    def get_classes(self, username):
+        class_db = self.mongo.gitsubmit.classes
+        resultCursor = class_db.find( { "$or": [ {"owner": username}, {"teachers": username}, {"students": username} ] })
+        return resultCursor.toArray()

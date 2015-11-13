@@ -324,3 +324,21 @@ def remove_contributor(username, submission_name, removed_username):
 def get_contributors(username, submission_name):
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     return dbw.get_contributors(username, submission_name)
+
+
+@app.route('/<username>/projects', methods=['GET'])
+def get_projects(username):
+    dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
+    return dbw.get_projects(username)
+
+
+@app.route('/<username>/submissions', methods=['GET'])
+def get_submissions(username):
+    dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
+    return dbw.get_submissions(username)
+
+
+@app.route('/<username>/classes', methods=['GET'])
+def get_classes(username):
+    dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
+    return dbw.get_classes(username)
