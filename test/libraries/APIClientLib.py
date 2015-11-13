@@ -72,6 +72,14 @@ class APIClientLib(object):
                       "data": student_obj}
         return return_obj
 
+    def get_class_individually(self, url_root, class_name):
+        class_result = requests.get(url_root+"/classes/"+class_name+"/")
+        class_obj = class_result.json()
+        return_obj = {"status_code": class_result.status_code,
+                      "data": class_obj}
+        print return_obj
+        return return_obj
+
     def get_class_projects(self, url_root, class_name):
         students_result = requests.get(url_root+"/classes/"+class_name+"/projects/")
         student_obj = students_result.json()
