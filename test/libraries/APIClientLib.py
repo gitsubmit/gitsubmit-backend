@@ -42,6 +42,13 @@ class APIClientLib(object):
                       "data": result.json()}
         return return_obj
 
+    def get_project_individually(self, url_root, project_name, class_name):
+        project_result = requests.get(url_root+"/classes/"+class_name+"/projects/"+project_name+"/")
+        project_obj = project_result.json()
+        return_obj = {"status_code": project_result.status_code,
+                      "data": project_obj}
+        return return_obj
+
     def get_project_owner(self, url_root, class_name, project_name):
         project_result = requests.get(url_root+"/classes/"+class_name+"/projects/"+project_name+"/owner/")
         project_obj = project_result.json()
