@@ -1,24 +1,26 @@
+
 __authors__ = ["shawkins", "Tsintsir", "sonph", "LeBat"]  # add yourself!
 
 # internal (project libs)
-from config import GITOLITE_ADMIN_PATH, DATABASE_PORT
+from config import GITOLITE_ADMIN_PATH, DATABASE_PORT, STATIC_REPOS_ROOT
 from db import UsernameAlreadyTakenError, EmailAlreadyTakenError
+from git_browser import GitRepo
 from gitolite import GitoliteWrapper, UserDoesNotExistError, KeyDoesNotExistError, \
     CannotDeleteOnlyKeyError, KeyAlreadyExistsError
 from db import  ClassDoesNotExistError, UrlNameAlreadyTakenError, DatabaseWrapper, ProjectDoesNotExistError
 
 # base (python packages)
+from email.utils import parseaddr
 
 # external (pip packages)
-from flask import Flask, jsonify
-from flask import request
+from flask import Flask, jsonify, request, Response
 from sshpubkeys import InvalidKeyException
 
 app = Flask(__name__)
 app.debug = True  # TODO: unset this after release!
 
 
-def configured_main(custom_gitolite_path, database_port):
+def configured_main(custom_gitolite_path, custom_repository_root_path, database_port):
     """ For testing versions of the API, we can point to a different gitolite admin directory, and a different database.
     Note that if this is not called (instead, gunicorn is invoked with app:app) then all defaults remain.
 
@@ -28,9 +30,10 @@ def configured_main(custom_gitolite_path, database_port):
     """
 
     # first, set these attributes as global, so that in later uses, we get THESE versions
-    global GITOLITE_ADMIN_PATH, DATABASE_PORT
+    global GITOLITE_ADMIN_PATH, DATABASE_PORT, STATIC_REPOS_ROOT
     GITOLITE_ADMIN_PATH = custom_gitolite_path
     DATABASE_PORT = database_port
+    STATIC_REPOS_ROOT = custom_repository_root_path
 
     # gunicorn requires that whatever method we call returns the wsgi app, so:
     return app
@@ -123,12 +126,16 @@ def signup():
     username = request.form.get("username")
     password = request.form.get("password")
     email = request.form.get("email")
+    if '@' not in parseaddr(email)[1]:
+        return jsonify({"error": "Invalid email address: "+str(email)})
+    if len(password) < 8:
+        return jsonify({"error": "Invalid password; must be 8 characters or more"})
     first_name = request.form.get("firstname")
     last_name = request.form.get("lastname")
 
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     try:
-        dbw.create_user(username, password,email, first_name, last_name)
+        dbw.create_user(username, email, password, first_name, last_name)
     except UsernameAlreadyTakenError as e:
         return jsonify({"error": "Username is already taken!", "exception": str(e)}), 400
     except EmailAlreadyTakenError as e:
@@ -324,6 +331,41 @@ def remove_contributor(username, submission_name, removed_username):
 def get_contributors(username, submission_name):
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     return dbw.get_contributors(username, submission_name)
+
+
+# Note: this is not a routed method
+def get_file_or_directory(local_path, commit_path, filepath):
+    repo = GitRepo(local_path)
+    object = repo.get_file_or_directory(commit_path, filepath)
+
+    resp = Response(mimetype="text/plain")
+
+    if object["type"] == "tree":
+        resp.headers['is_tree'] = True
+        response_content = ""
+        for item in object["file_list"]:
+            response_content += item["name"]
+            if item["type"] == "tree":
+                response_content += "/"
+            response_content += "\n"
+        resp.set_data(response_content)
+    else:
+        resp.set_data(object["content"])
+    return resp
+
+
+@app.route('/<username>/submissions/<submission_name>/source/<commit_path>/<path:filepath>')
+def get_submission_file_or_directory(username, submission_name, commit_path, filepath):
+    git_repo_path = username + "/submissions/" + submission_name
+    local_path = STATIC_REPOS_ROOT + "/" + git_repo_path + ".git"
+    return get_file_or_directory(local_path, commit_path, filepath)
+
+
+@app.route('/classes/<class_url>/projects/<project_url>/source/<commit_path>/<path:filepath>')
+def get_project_file_or_directory(class_url, project_url, commit_path, filepath):
+    git_repo_path = class_url + "/" + project_url
+    local_path = STATIC_REPOS_ROOT + "/" + git_repo_path + ".git"
+    return get_file_or_directory(local_path, commit_path, filepath)
 
 
 @app.route('/<username>/projects', methods=['GET'])
