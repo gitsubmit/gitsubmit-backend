@@ -125,6 +125,14 @@ class APIClientLib(object):
                       "data": result.json()}
         return return_obj
 
+    def get_submission_individually(self, url_root, owner, submission):
+        submission_result = requests.get(url_root+"/" + owner + "/submissions/" + submission)
+        submission_obj = submission_result.json()
+        return_obj = {"status_code": submission_result.status_code,
+                      "data": submission_obj}
+        print return_obj
+        return return_obj
+
     def create_predefined_class(self, url_root):
         randomized_url_name = "test_predef_classs"
         long_name = "A Predefined Class for Testing"
