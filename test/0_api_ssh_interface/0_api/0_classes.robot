@@ -13,6 +13,12 @@ Can list classses
     And user teacher1 is logged in
     Then get list of classses
 
+Can get class individually
+    [Tags]  api  database  classes
+    Given testing webserver is running
+    And user teacher1 is logged in
+    Then get class "adv_computers" individually
+
 Can create classes
     [Tags]  api  database  classes
     Given testing webserver is running
@@ -104,6 +110,13 @@ Get students enrolled in "${class}"
     ${content}=  get from dictionary  ${obj}  data
     ${students}=  get from dictionary  ${content}  students
     [Return]  ${students}
+
+Get class "${class}" individually
+    ${obj}=  get class individually  ${ROOT_URL}  ${class}
+    ${code}=  get from dictionary  ${obj}  status_code
+    should be equal as integers  ${code}  200
+    ${content}=  get from dictionary  ${obj}  data
+    [Return]  ${content}
 
 There should be ${number_students} enrolled in "${class}"
     ${students}=  get students enrolled in "${class}"

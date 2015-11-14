@@ -13,6 +13,12 @@ Can list projects in a class
     And user teacher1 is logged in
     Then get projects of class "intro_to_computers"
 
+Can get project individually
+    [Tags]  api  database  projects
+    Given testing webserver is running
+    And user teacher1 is logged in
+    Then get project "use_a_computer" in class "adv_computers" individually
+
 Can get owner of a project
     [Tags]  api  database  projects
     Given testing webserver is running
@@ -77,6 +83,13 @@ User creates a new randomized project in class "${class}"
     ${obj}=  create randomized project  ${ROOT_URL}  ${class}
     ${code}=  get from dictionary  ${obj}  status_code
     should be equal as integers  ${code}  200
+
+Get project "${project}" in class "${class_name}" individually
+    ${obj}=  get project individually  ${ROOT_URL}  ${class_name}  ${project}
+    ${code}=  get from dictionary  ${obj}  status_code
+    should be equal as integers  ${code}  200
+    ${content}=  get from dictionary  ${obj}  data
+    [Return]  ${content}
 
 Get owner of project "${project}" in class "${class_name}"
     ${obj}=  get project owner  ${ROOT_URL}  ${class_name}  ${project}

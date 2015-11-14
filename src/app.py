@@ -176,6 +176,11 @@ def new_class():
         return jsonify({"error": "Url name was already taken!", "exception": str(e)}), 403
 
 
+@app.route('/classes/<class_url>/')
+def get_class(class_url):
+    dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
+    return jsonify({"class": dbw.get_class_or_error(class_url)})
+
 @app.route('/classes/<class_url>/projects/')
 def list_projects(class_url):
     """ covered by test 2_projects / `Can list projects in a class` """
@@ -248,6 +253,13 @@ def add_teacher(class_url):
     return jsonify(class_updated=dbw.get_class_or_error(class_url))
 
 
+@app.route('/classes/<class_url>/projects/<project_url>/')
+def get_project(class_url, project_url):
+    """ covered by test 2_projects / `Can list projects in a class` """
+    dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
+    return jsonify(project=dbw.get_project_or_error(class_url, project_url))
+
+
 @app.route('/classes/<class_url>/projects/<project_url>/owner/')
 def get_project_owner(class_url, project_url):
     """ covered by test 2_projects / `Can get owner of a project` """
@@ -304,6 +316,13 @@ def make_submission(class_name, project_name):
         return jsonify({"error": "That project does not exist!", "exception": str(e)}), 404
     except ClassDoesNotExistError as e:
         return jsonify({"error": "Class does not exist!", "exception": str(e)}), 404
+
+
+@app.route('/<username>/submissions/<submission_name>/')
+def get_submission(username, submission_name):
+    dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
+    gitolite_url = username + "/submissions/" + submission_name
+    return jsonify(submission=dbw.get_submission_or_error(gitolite_url=gitolite_url))
 
 
 @app.route('/<username>/submissions/<submission_name>/contributors/', methods=['POST'])
