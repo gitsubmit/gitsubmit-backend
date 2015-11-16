@@ -368,19 +368,19 @@ def get_project_file_or_directory(class_url, project_url, commit_path, filepath)
     return get_file_or_directory(local_path, commit_path, filepath)
 
 
-@app.route('/<username>/projects', methods=['GET'])
+@app.route('/<username>/projects/', methods=['GET'])
 def get_projects(username):
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     return jsonify({"projects": dbw.get_projects(username)})
 
 
-@app.route('/<username>/submissions', methods=['GET'])
+@app.route('/<username>/submissions/', methods=['GET'])
 def get_submissions(username):
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     return jsonify({"submissions": dbw.get_submissions(username)})
 
 
-@app.route('/<username>/classes', methods=['GET'])
+@app.route('/<username>/classes/', methods=['GET'])
 def get_classes(username):
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     return jsonify({"classes": dbw.get_classes(username)})
