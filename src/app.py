@@ -385,3 +385,21 @@ def get_project_file_or_directory(class_url, project_url, commit_path, filepath)
     git_repo_path = class_url + "/" + project_url
     local_path = STATIC_REPOS_ROOT + "/" + git_repo_path + ".git"
     return get_file_or_directory(local_path, commit_path, filepath)
+
+
+@app.route('/<username>/projects/', methods=['GET'])
+def get_projects_for_user(username):
+    dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
+    return jsonify({"projects": dbw.get_projects_for_user(username)})
+
+
+@app.route('/<username>/submissions/', methods=['GET'])
+def get_submissions_for_user(username):
+    dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
+    return jsonify({"submissions": dbw.get_submissions_for_user(username)})
+
+
+@app.route('/<username>/classes/', methods=['GET'])
+def get_classes_for_user(username):
+    dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
+    return jsonify({"classes": dbw.get_classes_for_user(username)})
