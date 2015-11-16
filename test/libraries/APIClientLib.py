@@ -179,3 +179,18 @@ class APIClientLib(object):
         url = url_root + "/" + user + "/landing/"
         method_cb = requests.get
         return self.make_request(method_cb, url)
+
+    def get_users_projects(self, url_root, user):
+        url = url_root + "/" + user + "/projects/"
+        method_cb = requests.get
+        return self.make_request(method_cb, url)
+
+    def get_users_classes(self, url_root, user):
+        url = url_root + "/" + user + "/classes/"
+        method_cb = requests.get
+        return self.make_request(method_cb, url)
+
+    def get_users_submissions(self, url_root, user):
+        url = url_root + "/" + user + "/submissions/"
+        method_cb = requests.get
+        return self.make_request(method_cb, url)

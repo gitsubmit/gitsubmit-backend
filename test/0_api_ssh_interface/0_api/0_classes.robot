@@ -61,6 +61,12 @@ Teacher can add other teachers to class they own
     And user teacher1 is logged in
     Then can add teacher teacher2 to class "intro_to_computers"
 
+Can get users classes
+    [Tags]  api  database  classes
+    Given testing webserver is running
+    And user teacher1 is logged in
+    Then Can get user "student1"'s classes
+    
 *** Keywords ***
 Can add teacher ${teacher} to class "${class_name}"
     ${obj}=  add teacher to class  ${ROOT_URL}  ${teacher}  ${class_name}
@@ -157,3 +163,8 @@ User attempts to create the same predefined class unsuccessfully
     ${obj}=  create predefined class  ${ROOT_URL}
     ${code}=  get from dictionary  ${obj}  status_code
     should not be equal as integers  ${code}  200
+
+Can get user "${user}"'s classes
+    ${obj}=  get users classes  ${ROOT_URL}  ${user}
+    ${code}=  get from dictionary  ${obj}  status_code
+    should be equal as integers  ${code}  200
