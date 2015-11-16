@@ -66,7 +66,7 @@ Can get users classes
     Given testing webserver is running
     And user teacher1 is logged in
     Then Can get user "student1"'s classes
-    
+
 *** Keywords ***
 Can add teacher ${teacher} to class "${class_name}"
     ${obj}=  add teacher to class  ${ROOT_URL}  ${teacher}  ${class_name}
