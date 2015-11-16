@@ -170,3 +170,8 @@ class APIClientLib(object):
         url = url_root + "/classes/" + class_name + "/projects/" + project_name + "/source/" + commit_or_branch + "/" + filepath
         method_cb = requests.get
         return self.make_request(method_cb, url, is_json=False, include_headers=True)
+
+    def get_users_landing_page(self, url_root, user):
+        url = url_root + "/" + user + "/landing/"
+        method_cb = requests.get
+        return self.make_request(method_cb, url)
