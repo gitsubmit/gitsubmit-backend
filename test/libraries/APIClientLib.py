@@ -17,6 +17,10 @@ class APIClientLib(object):
             print "sending data: "
             print data
         result = method_callback(url, data=data)
+        print "raw result:"
+        print result.status_code
+        print result.headers
+        print result.text
         if is_json:
             result_obj = result.json()
         else:
