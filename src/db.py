@@ -265,7 +265,7 @@ class DatabaseWrapper(object):
         return submission_doc["contributors"]
 
 
-    def get_projects(self, username):
+    def get_projects_for_user(self, username):
         project_db = self.mongo.gitsubmit.projects
         result_cursor = project_db.find({"owner": username})
         projects = result_cursor.toArray()
@@ -273,13 +273,13 @@ class DatabaseWrapper(object):
         return projects
 
 
-    def get_submissions(self, username):
+    def get_submissions_for_user(self, username):
         submission_db = self.mongo.gitsubmit.submissions
         result_cursor = submission_db.find( { "$or": [ {"owner": username}, {"contributors": username} ] })
         return result_cursor.toArray()
 
 
-    def get_classes(self, username):
+    def get_classes_for_user(self, username):
         class_db = self.mongo.gitsubmit.classes
         result_cursor = class_db.find( { "$or": [ {"owner": username}, {"teachers": username}, {"students": username} ] })
         return result_cursor.toArray()
