@@ -42,14 +42,10 @@ def configured_main(custom_gitolite_path, custom_repository_root_path, database_
 
 
 def get_json_data():
-    json_attempt = request.get_json()
-    if not json_attempt:
-        try:
-            json_attempt = json.loads(request.data)
-        except ValueError:
-            pass
-    if not json_attempt:
-        json_attempt = request.form
+    if len(request.form) > 0:  # we got form data
+        return request.form
+    else:  # hopefully, we got json. If not, this will raise a 400 error for us
+        json_attempt = request.get_json(force=True)
     return json_attempt
 
 
