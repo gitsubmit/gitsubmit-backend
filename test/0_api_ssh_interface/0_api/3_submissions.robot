@@ -18,6 +18,12 @@ Can get a users submissions
     And user student1 is logged in
     Then Can get user "student1"'s submissions
 
+Can delete submissions
+    [Tags]  api  database  submissions
+    Given testing webserver is running
+    And user student1 is logged in
+    Then Can delete user "student1"'s submission "turned_on_a_computer"
+
 *** Keywords ***
 Get user "${user}"'s submission titled "${submission}" individually
     ${obj}=  get submission individually  ${ROOT_URL}  ${user}  ${submission}
@@ -32,6 +38,6 @@ Can get user "${user}"'s submissions
     should be equal as integers  ${code}  200
 
 Can delete user "${user}"'s submission "${submission}"
-    ${obj}=  delete submission  ${ROOT_IRL}  ${user}  ${submission}
+    ${obj}=  delete submission  ${ROOT_URL}  ${user}  ${submission}
     ${code}=  get from dictionary  ${obj}  status_code
     should be equal as integers  ${code}  200
