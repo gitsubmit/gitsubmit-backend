@@ -322,7 +322,11 @@ def make_submission(class_name, project_name):
 def get_submission(username, submission_name):
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     gitolite_url = username + "/submissions/" + submission_name
-    return jsonify(submission=dbw.get_submission_or_error(gitolite_url=gitolite_url))
+    try:
+        submission=dbw.get_submission_or_error(gitolite_url=gitolite_url)
+        return jsonify(submission=submission)
+    except SubmissionDoesNotExistError as e:
+        return jsonify(error="submission does not exist!", exception=str(e)), 404
 
 
 @app.route('/<username>/submissions/<submission_name>/', methods=["DELETE"])
@@ -333,7 +337,7 @@ def delete_user_submission(username, submission_name):
         dbw.delete_submission(gitolite_url)
         return jsonify(deleted=True)
     except SubmissionDoesNotExistError:
-        return jsonify(error="submission does not exist!")
+        return jsonify(error="submission does not exist!"), 404
 
 
 @app.route('/<username>/submissions/<submission_name>/contributors/', methods=['POST'])
