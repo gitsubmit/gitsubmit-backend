@@ -30,3 +30,8 @@ Can get user "${user}"'s submissions
     ${obj}=  get users submissions  ${ROOT_URL}  ${user}
     ${code}=  get from dictionary  ${obj}  status_code
     should be equal as integers  ${code}  200
+
+Can delete user "${user}"'s submission "${submission}"
+    ${obj}=  delete submission  ${ROOT_IRL}  ${user}  ${submission}
+    ${code}=  get from dictionary  ${obj}  status_code
+    should be equal as integers  ${code}  200
