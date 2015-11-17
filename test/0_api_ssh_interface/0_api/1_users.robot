@@ -52,6 +52,13 @@ User cannot delete other users keys
     And user student2 is logged in
     Then Cannot remove key from student1
 
+User has a landing page
+    [Tags]  api  database  users
+    Given testing webserver is running
+    And user student2 is logged in
+    Then Can get landing page for user "student2"
+
+
 *** Keywords ***
 Cannot remove key from ${user}
     ${keys_before}=  get number of keys for ${user}
@@ -158,5 +165,10 @@ There should be ${number_keys} keys when user asks for a list of ${user}'s keys
     ${obj}=  add preset key2 to user  ${ROOT_URL}  ${user}
     ${code}=  get from dictionary  ${obj}  status_code
     should not be equal as integers  ${code}  200
+
+Can get landing page for user "${user}"
+    ${obj}=  get users landing page  ${ROOT_URL}  ${user}
+    ${code}=  get from dictionary  ${obj}  status_code
+    should be equal as integers  ${code}  200
 
 

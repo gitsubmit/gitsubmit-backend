@@ -403,3 +403,13 @@ def get_submissions_for_user(username):
 def get_classes_for_user(username):
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     return jsonify({"classes": dbw.get_classes_for_user(username)})
+
+
+@app.route('/<username>/landing/', methods=['GET'])
+def get_landing_for_user(username):
+    dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
+    classes = dbw.get_classes_for_user(username)
+    projects = dbw.get_projects_for_user(username)
+    submissions = dbw.get_submissions_for_user(username)
+    return jsonify(dict(classes=classes, projects=projects, submissions=submissions))
+

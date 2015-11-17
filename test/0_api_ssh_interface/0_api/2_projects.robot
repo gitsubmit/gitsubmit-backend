@@ -32,16 +32,22 @@ Teacher can create a new project
     Then number of projects in "adv_computers" should increase by one after user creates a randomized project
 
 Cannot create projects with same url
-    [Tags]  api  database  classes
+    [Tags]  api  database  projects
     Given testing webserver is running
     And user teacher1 is logged in
     Then Number of projects in "adv_computers" should only increase by one when user creates a predefined project twice
 
 Can update due date in a project
-    [Tags]  api  database  classes
+    [Tags]  api  database  projects
     Given testing webserver is running
     And user teacher1 is logged in
     Then Can update the due date for project "use_a_computer" in class "adv_computers" to "2016-08-22"
+
+Can get projects related to a user
+    [Tags]  api  database  projects
+    Given testing webserver is running
+    And user teacher1 is logged in
+    Then Can get user "student1"'s projects
 
 
 *** Keywords ***
@@ -111,3 +117,8 @@ Get projects of class "${class}"
     ${content}=  get from dictionary  ${obj}  data
     ${projects}=  get from dictionary  ${content}  projects
     [Return]  ${projects}
+
+Can get user "${user}"'s projects
+    ${obj}=  get users projects  ${ROOT_URL}  ${user}
+    ${code}=  get from dictionary  ${obj}  status_code
+    should be equal as integers  ${code}  200
