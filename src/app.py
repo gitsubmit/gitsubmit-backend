@@ -5,7 +5,7 @@ __authors__ = ["shawkins", "Tsintsir", "sonph", "LeBat"]  # add yourself!
 
 # internal (project libs)
 from config import GITOLITE_ADMIN_PATH, DATABASE_PORT, STATIC_REPOS_ROOT
-from db import UsernameAlreadyTakenError, EmailAlreadyTakenError
+from db import UsernameAlreadyTakenError, EmailAlreadyTakenError, SubmissionDoesNotExistError
 from git_browser import GitRepo
 from gitolite import GitoliteWrapper, UserDoesNotExistError, KeyDoesNotExistError, \
     CannotDeleteOnlyKeyError, KeyAlreadyExistsError
@@ -343,7 +343,22 @@ def make_submission(class_name, project_name):
 def get_submission(username, submission_name):
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     gitolite_url = username + "/submissions/" + submission_name
-    return jsonify(submission=dbw.get_submission_or_error(gitolite_url=gitolite_url))
+    try:
+        submission=dbw.get_submission_or_error(gitolite_url=gitolite_url)
+        return jsonify(submission=submission)
+    except SubmissionDoesNotExistError as e:
+        return jsonify(error="submission does not exist!", exception=str(e)), 404
+
+
+@app.route('/<username>/submissions/<submission_name>/', methods=["DELETE"])
+def delete_user_submission(username, submission_name):
+    dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
+    gitolite_url = username + "/submissions/" + submission_name
+    try:
+        dbw.delete_submission(gitolite_url)
+        return jsonify(deleted=True)
+    except SubmissionDoesNotExistError:
+        return jsonify(error="submission does not exist!"), 404
 
 
 @app.route('/<username>/submissions/<submission_name>/contributors/', methods=['POST'])
@@ -358,7 +373,7 @@ def add_contributor(username, submission_name):
         return jsonify({"error": "Placeholder error until exceptions are raised by the backend.", "exception": str(e)}), 404
 
 
-@app.route('/<username>/submissions/<submission_name>/contributors/<removed_username>', methods=['DELETE'])
+@app.route('/<username>/submissions/<submission_name>/contributors/<removed_username>/', methods=['DELETE'])
 def remove_contributor(username, submission_name, removed_username):
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     try:

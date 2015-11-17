@@ -199,3 +199,8 @@ class APIClientLib(object):
         url = url_root + "/" + user + "/submissions/"
         method_cb = requests.get
         return self.make_request(method_cb, url)
+
+    def delete_submission(self, url_root, username, submission):
+        url = url_root + "/" + username + "/submissions/" + submission + "/"
+        method_cb = requests.delete
+        return self.make_request(method_cb, url)
