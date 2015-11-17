@@ -33,6 +33,11 @@ class APIClientLib(object):
         print return_obj
         return return_obj
 
+    def log_known_user_in(self, url_root):
+        url = url_root + "/login/"
+        method_cb = requests.post
+        return self.make_request(method_cb, url, {"username": "student1", "password": "verybadpw"})
+
     def update_due_date(self, url_root, class_name, project_name, new_due_date):
         updated_date_obj = {"date": new_due_date}
         url = url_root+"/classes/"+class_name+"/projects/"+project_name+"/due_date/"

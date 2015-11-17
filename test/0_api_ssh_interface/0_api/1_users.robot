@@ -7,6 +7,11 @@ Library           Collections
 
 
 *** Test Cases ***
+User can log in
+    [Tags]  api  database  users  login
+    Given testing webserver is running
+    Then should get a token when logging in
+
 Can list user's SSH keys
     [Tags]  api  database  users  sshkeys
     Given testing webserver is running
@@ -60,6 +65,13 @@ User has a landing page
 
 
 *** Keywords ***
+should get a token when logging in
+    ${obj}=  log known user in  ${ROOT_URL}
+    ${code}=  get from dictionary  ${obj}  status_code
+    should be equal as integers  ${code}  200
+    ${content}=  get from dictionary  ${obj}  data
+    dictionary should contain key  ${content}  token
+
 Cannot remove key from ${user}
     ${keys_before}=  get number of keys for ${user}
     User removes first key of ${user} unsuccessfully
