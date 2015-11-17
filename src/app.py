@@ -1,4 +1,5 @@
 import json
+import sys
 
 __authors__ = ["shawkins", "Tsintsir", "sonph", "LeBat"]  # add yourself!
 
@@ -40,6 +41,18 @@ def configured_main(custom_gitolite_path, custom_repository_root_path, database_
     return app
 
 
+def get_json_data():
+    json_attempt = request.get_json()
+    if not json_attempt:
+        try:
+            json_attempt = json.loads(request.data)
+        except ValueError:
+            pass
+    if not json_attempt:
+        json_attempt = request.form
+    return json_attempt
+
+
 @app.route('/')
 def hello_world():
     return jsonify({"hello": "world"})
@@ -56,7 +69,9 @@ def list_ssh_keys(username):
 
 @app.route('/login/', methods=['POST'])
 def login():
-    json_data = json.loads(request.data)
+    json_data = get_json_data()
+    sys.stderr.write("here comes json data!")
+    sys.stderr.write(str(json_data))
     username = json_data.get("username")
     password = json_data.get("password")
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
@@ -70,7 +85,7 @@ def login():
 @app.route('/<username>/ssh_keys/', methods=['POST'])
 def post_new_ssh_key(username):
     """ covered by 1_users / `User can add an ssh key` """
-    json_data = json.loads(request.data)
+    json_data = get_json_data()
     if False:  # TODO: ensure that username exists
         return jsonify({"error": "username does not exist"}), 404
 
@@ -98,7 +113,7 @@ def post_new_ssh_key(username):
 @app.route('/<username>/ssh_keys/', methods=['DELETE'])
 def remove_key_from_user(username):
     """ covered by 1_users / `User can delete an existing key from themselves` """
-    json_data = json.loads(request.data)
+    json_data = get_json_data()
     if False:  # TODO: ensure user is authed and is self
         return jsonify({"error": "Unauthorized"}), 401
 
@@ -118,7 +133,7 @@ def remove_key_from_user(username):
 
 @app.route('/<username>/update/', methods=['POST'])
 def update_user_info():
-    json_data = json.loads(request.data)
+    json_data = get_json_data()
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     username = "konrad" #TODO: get currently logged in user
     new_email = json_data.get("email")
@@ -128,7 +143,7 @@ def update_user_info():
 
 @app.route('/signup/', methods=['POST'])
 def signup():
-    json_data = json.loads(request.data)
+    json_data = get_json_data()
     username = json_data.get("username")
     password = json_data.get("password")
     email = json_data.get("email")
@@ -151,7 +166,7 @@ def signup():
 
 @app.route('/<username>/update_password/<temp_password_key>/', methods=['POST'])
 def update_user_password():
-    json_data = json.loads(request.data)
+    json_data = get_json_data()
     dbw = DatabaseWrapper()
     username = "konrad"
     new_password = json_data.get("password")
@@ -169,7 +184,7 @@ def list_classes():
 @app.route('/classes/', methods=["POST"])
 def new_class():
     """ covered by test 0_classes / `Can create classes` """
-    json_data = json.loads(request.data)
+    json_data = get_json_data()
     class_name = json_data.get("class_name")
     url_name = json_data.get("url_name")
     description = json_data.get("description")
@@ -232,7 +247,7 @@ def class_students(class_url):
 @app.route('/classes/<class_url>/student/', methods=["POST"])
 def add_student(class_url):
     """ covered by test 0_classes / `Student can enroll in a class` """
-    json_data = json.loads(request.data)
+    json_data = get_json_data()
     student = json_data.get("username")
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
 
@@ -249,7 +264,7 @@ def add_student(class_url):
 @app.route('/classes/<class_url>/teacher/', methods=["POST"])
 def add_teacher(class_url):
     """ covered by test 0_classes / `Teacher can add other teachers to class they own` """
-    json_data = json.loads(request.data)
+    json_data = get_json_data()
     teacher = json_data.get("username")
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
 
@@ -284,7 +299,7 @@ def get_project_owner(class_url, project_url):
 @app.route('/classes/<class_url>/projects/', methods=["POST"])
 def new_project(class_url):
     """ covered by test 2_projects / `Teacher can create new project` """
-    json_data = json.loads(request.data)
+    json_data = get_json_data()
     project_name = json_data.get("project_name")
     url_name = json_data.get("url_name")
     description = json_data.get("description")
@@ -307,7 +322,7 @@ def new_project(class_url):
 @app.route('/classes/<class_url>/projects/<project_url>/due_date/', methods=["POST"])
 def new_project_due_date(class_url, project_url):
     """ covered by test 2_projects / `Can update due date in a project` """
-    json_data = json.loads(request.data)
+    json_data = get_json_data()
     due_date = json_data.get("date")
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     return jsonify(project_updated=dbw.update_project_due_date(class_url, project_url, due_date))
@@ -315,7 +330,7 @@ def new_project_due_date(class_url, project_url):
 
 @app.route('/classes/<class_name>/projects/<project_name>/make_submission/', methods=["POST"])
 def make_submission(class_name, project_name):
-    json_data = json.loads(request.data)
+    json_data = get_json_data()
     owner = json_data.get("owner")
     url_name = '/' + owner + '/submissions/' + project_name + '/'
     parent_url = '/' + class_name + '/projects/' + project_name + '/'
@@ -340,7 +355,7 @@ def get_submission(username, submission_name):
 
 @app.route('/<username>/submissions/<submission_name>/contributors/', methods=['POST'])
 def add_contributor(username, submission_name):
-    json_data = json.loads(request.data)
+    json_data = get_json_data()
     new_contributor = json_data.get("username")
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     try:
