@@ -16,7 +16,7 @@ Can get a users submissions
     [Tags]  api  database  submissions
     Given testing webserver is running
     And user student1 is logged in
-    Then Get user "student1"'s submissions
+    Then Can get user "student1"'s submissions
 
 *** Keywords ***
 Get user "${user}"'s submission titled "${submission}" individually

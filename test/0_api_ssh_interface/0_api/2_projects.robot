@@ -47,7 +47,7 @@ Can get projects related to a user
     [Tags]  api  database  projects
     Given testing webserver is running
     And user teacher1 is logged in
-    Then Can get user "${user}"'s projects
+    Then Can get user "student1"'s projects
 
 
 *** Keywords ***
