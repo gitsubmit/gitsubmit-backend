@@ -278,7 +278,6 @@ class DatabaseWrapper(object):
             raise SubmissionDoesNotExistError(str(username) + ": " + str(submission_name))
         return submission_doc["contributors"]
 
-
     def get_projects_for_user(self, username):
         project_db = self.mongo.gitsubmit.projects
         result_cursor = project_db.find({"owner": username}, projection={"_id": False})
@@ -286,16 +285,31 @@ class DatabaseWrapper(object):
         projects = [self.fix_dates_in_project_obj(p) for p in projects]
         return projects
 
-
     def get_submissions_for_user(self, username):
         submission_db = self.mongo.gitsubmit.submissions
         result_cursor = submission_db.find( { "$or": [ {"owner": username}, {"contributors": username} ] }, projection={"_id": False})
         submissions = [s for s in result_cursor]
         return submissions
 
-
     def get_classes_for_user(self, username):
         class_db = self.mongo.gitsubmit.classes
         result_cursor = class_db.find( { "$or": [ {"owner": username}, {"teachers": username}, {"students": username} ] }, projection={"_id": False})
         classes = [c for c in result_cursor]
         return classes
+
+    def is_past_deadline(self, submission_gitolite_url):
+        """ returns bool, datetime  (e.g. True, <datetime object> ) """
+        submission = self.get_submission_or_error(submission_gitolite_url)
+        project_db = self.mongo.gitsubmit.projects
+
+        parent_project_url = submission["parent"]
+
+        parent_project_obj = project_db.find_one({"url_name": parent_project_url})
+        if parent_project_obj is None:
+            raise ProjectDoesNotExistError(str(parent_project_url))
+
+        deadline = parent_project_obj["due"]
+        now = datetime.now()
+
+        result = now > deadline
+        return result, deadline
