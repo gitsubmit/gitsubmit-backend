@@ -133,10 +133,15 @@ class DatabaseWrapper(object):
 
         return class_db.insert_one(class_obj)
 
-    def update_class_info(self, url_name, new_description):
-        class_obj = self.get_project_or_error(url_name, new_description)
+    def update_class_info(self, url_name, new_description, new_long_name, new_owner):
+        class_obj = self.get_class_or_error(url_name)
 
-        class_obj["description"] = new_description
+        if new_description is not None:
+            class_obj["description"] = new_description
+        if new_long_name is not None:
+            class_obj["long_name"] = new_long_name
+        if new_owner is not None:
+            class_obj["owner"] = new_owner
         class_db = self.mongo.gitsubmit.classes
         class_db.update({"url_name": url_name}, class_obj)
 
@@ -200,10 +205,14 @@ class DatabaseWrapper(object):
         project_db.update({"url_name": project_url}, project_obj)
         return self.fix_dates_in_project_obj(project_obj)
 
-    def update_project_info(self, class_url, project_url, new_description):
+    def update_project_info(self, class_url, project_url, new_description, new_long_name, new_owner):
         project_obj = self.get_project_or_error(class_url, project_url)
-
-        project_obj["description"] = new_description
+        if new_description is not None:
+            project_obj["description"] = new_description
+        if new_long_name is not None:
+            project_obj["long_name"] = new_long_name
+        if new_owner is not None:
+            project_obj["owner"] = new_owner
         project_db = self.mongo.gitsubmit.projects
         project_db.update({"url_name": project_url}, project_obj)
 
