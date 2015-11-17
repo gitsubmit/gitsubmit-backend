@@ -13,6 +13,12 @@ Can list classses
     And user teacher1 is logged in
     Then get list of classses
 
+Can get class individually
+    [Tags]  api  database  classes
+    Given testing webserver is running
+    And user teacher1 is logged in
+    Then get class "adv_computers" individually
+
 Can create classes
     [Tags]  api  database  classes
     Given testing webserver is running
@@ -54,6 +60,12 @@ Teacher can add other teachers to class they own
     Given testing webserver is running
     And user teacher1 is logged in
     Then can add teacher teacher2 to class "intro_to_computers"
+
+Can get users classes
+    [Tags]  api  database  classes
+    Given testing webserver is running
+    And user teacher1 is logged in
+    Then Can get user "student1"'s classes
 
 *** Keywords ***
 Can add teacher ${teacher} to class "${class_name}"
@@ -105,6 +117,13 @@ Get students enrolled in "${class}"
     ${students}=  get from dictionary  ${content}  students
     [Return]  ${students}
 
+Get class "${class}" individually
+    ${obj}=  get class individually  ${ROOT_URL}  ${class}
+    ${code}=  get from dictionary  ${obj}  status_code
+    should be equal as integers  ${code}  200
+    ${content}=  get from dictionary  ${obj}  data
+    [Return]  ${content}
+
 There should be ${number_students} enrolled in "${class}"
     ${students}=  get students enrolled in "${class}"
     ${len_students}=  get length  ${students}
@@ -144,3 +163,8 @@ User attempts to create the same predefined class unsuccessfully
     ${obj}=  create predefined class  ${ROOT_URL}
     ${code}=  get from dictionary  ${obj}  status_code
     should not be equal as integers  ${code}  200
+
+Can get user "${user}"'s classes
+    ${obj}=  get users classes  ${ROOT_URL}  ${user}
+    ${code}=  get from dictionary  ${obj}  status_code
+    should be equal as integers  ${code}  200

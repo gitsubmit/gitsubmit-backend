@@ -252,18 +252,22 @@ class DatabaseWrapper(object):
             project_obj["due"] = project_obj["due"].strftime(TIME_FORMAT)
         return project_obj
 
+    def get_submission_or_error(self, gitolite_url):
+        submission_db = self.mongo.gitsubmit.submissions
+        submission_obj = submission_db.find_one({"gitolite_url": gitolite_url}, projection={"_id": False})
+        if submission_obj is None:
+            raise SubmissionDoesNotExistError(str(gitolite_url))
+        return submission_obj
 
     # TODO: implement this function. Modify submission object and repo
     # Raised errors should be handled in the API as well, so don't forget!
     def add_contributor(self, username, submission_name, new_contributor):
         return False
 
-
     # TODO: implement this function. Modify submission object and repo privileges
     # Raised errors should be handled in the API as well, so don't forget!
     def remove_contributor(self, username, submission_name, removed_contributor):
         return False
-
 
     def get_contributors(self, username, submission_name):
         submission_db = self.mongo.gitsubmit.submissions
@@ -271,3 +275,25 @@ class DatabaseWrapper(object):
         if submission_doc is None:
             raise SubmissionDoesNotExistError(str(username) + ": " + str(submission_name))
         return submission_doc["contributors"]
+
+
+    def get_projects_for_user(self, username):
+        project_db = self.mongo.gitsubmit.projects
+        result_cursor = project_db.find({"owner": username}, projection={"_id": False})
+        projects = [p for p in result_cursor]
+        projects = [self.fix_dates_in_project_obj(p) for p in projects]
+        return projects
+
+
+    def get_submissions_for_user(self, username):
+        submission_db = self.mongo.gitsubmit.submissions
+        result_cursor = submission_db.find( { "$or": [ {"owner": username}, {"contributors": username} ] }, projection={"_id": False})
+        submissions = [s for s in result_cursor]
+        return submissions
+
+
+    def get_classes_for_user(self, username):
+        class_db = self.mongo.gitsubmit.classes
+        result_cursor = class_db.find( { "$or": [ {"owner": username}, {"teachers": username}, {"students": username} ] }, projection={"_id": False})
+        classes = [c for c in result_cursor]
+        return classes
