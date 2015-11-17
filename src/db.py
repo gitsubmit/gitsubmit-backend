@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from gitolite import GitoliteWrapper
 from config import TIME_FORMAT
 from binascii import b2a_hex
@@ -53,7 +53,7 @@ class DatabaseWrapper(object):
             salt = user_doc["salt"]
             # TODO: Better secret handling
             if b2a_hex(PBKDF2(password, salt).read(256)) == user_doc["hash"]:
-                return jwt.encode({'username': username, 'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=2)}, 'gitsubmitsecret')
+                return jwt.encode({'username': username, 'exp': datetime.utcnow() + timedelta(hours=2)}, 'gitsubmitsecret')
             else:
                 return False
 
