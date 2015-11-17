@@ -336,7 +336,7 @@ def add_contributor(username, submission_name):
         return jsonify({"error": "Placeholder error until exceptions are raised by the backend.", "exception": str(e)}), 404
 
 
-@app.route('/<username>/submissions/<submission_name>/contributors/<removed_username>', methods=['DELETE'])
+@app.route('/<username>/submissions/<submission_name>/contributors/<removed_username>/', methods=['DELETE'])
 def remove_contributor(username, submission_name, removed_username):
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     try:
