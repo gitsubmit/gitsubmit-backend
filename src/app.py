@@ -66,8 +66,6 @@ def list_ssh_keys(username):
 @app.route('/login/', methods=['POST'])
 def login():
     json_data = get_json_data()
-    sys.stderr.write("here comes json data!")
-    sys.stderr.write(str(json_data))
     username = json_data.get("username")
     password = json_data.get("password")
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
@@ -189,7 +187,6 @@ def new_class():
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     try:
         c = dbw.create_class(url_name, class_name, description, owner)
-        print c
         return jsonify(class_created=url_name)
     except UrlNameAlreadyTakenError as e:
         return jsonify({"error": "Url name was already taken!", "exception": str(e)}), 403
