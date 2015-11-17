@@ -20,8 +20,9 @@ class SubmissionDoesNotExistError(Exception): pass
 
 class DatabaseWrapper(object):
 
-    def __init__(self, gitolite_admin_path, port=None):
+    def __init__(self, gitolite_admin_path, port=None, ssh_host="localhost"):
         self.mongo = MongoClient(port=port)
+        self.ssh_host = ssh_host
         self.glpath = gitolite_admin_path
 
     def create_user(self, username, email, password, first_name, last_name):
@@ -227,7 +228,7 @@ class DatabaseWrapper(object):
 
         # This is what actually causes the fork, though
         parent_project_full_git_url = parent_class_url + "/" + parent_project_url
-        fork_callstring = "ssh git@localhost fork " + parent_project_full_git_url + " " + submission_full_git_url
+        fork_callstring = "ssh git@" + self.ssh_host + " fork " + parent_project_full_git_url + " " + submission_full_git_url
         subprocess.call(fork_callstring, shell=True)
 
         # If we got here, nothing went wrong, stuff it in the db

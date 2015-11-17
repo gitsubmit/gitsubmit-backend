@@ -31,6 +31,7 @@ fi
 pip install -r requirements.txt
 
 # Start up a docker instance for the gitolite repo
+# -v $(readlink -f gitolite.rc):/home/git/.gitolite.rc
 nohup docker run --name gitotestname -p 3022:22 -e SSH_KEY="$(cat /home/git/.ssh/id_rsa.pub)" elsdoerfer/gitolite &
 nohup docker run --name mongotestname -p 27117:27017 -e AUTH=no tutum/mongodb &
 
