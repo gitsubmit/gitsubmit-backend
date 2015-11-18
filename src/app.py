@@ -50,19 +50,20 @@ def get_json_data():
     return json_attempt
 
 
-@crossdomain(app=app, origin='*')
 @app.route('/')
+@crossdomain(app=app, origin='*')
 def hello_world():
     return jsonify({"hello": "world"})
 
 
-@crossdomain(app, origin='*')
 @app.route('/testpost/', methods=["POST"])
+@crossdomain(app=app, origin='*')
 def testpost():
     return jsonify(request=str(request), request_data=str(request.data))
 
 
 @app.route('/<username>/ssh_keys/', methods=['GET'])
+@crossdomain(app=app, origin='*')
 def list_ssh_keys(username):
     """ covered by test 1_users / `Can list user's SSH keys` """
     gw = GitoliteWrapper(GITOLITE_ADMIN_PATH)
@@ -72,6 +73,7 @@ def list_ssh_keys(username):
 
 
 @app.route('/login/', methods=['POST'])
+@crossdomain(app=app, origin='*')
 def login():
     json_data = get_json_data()
     username = json_data.get("username")
@@ -85,6 +87,7 @@ def login():
 
 
 @app.route('/<username>/ssh_keys/', methods=['POST'])
+@crossdomain(app=app, origin='*')
 def post_new_ssh_key(username):
     """ covered by 1_users / `User can add an ssh key` """
     json_data = get_json_data()
@@ -113,6 +116,7 @@ def post_new_ssh_key(username):
 
 
 @app.route('/<username>/ssh_keys/', methods=['DELETE'])
+@crossdomain(app=app, origin='*')
 def remove_key_from_user(username):
     """ covered by 1_users / `User can delete an existing key from themselves` """
     json_data = get_json_data()
@@ -133,7 +137,9 @@ def remove_key_from_user(username):
         return jsonify({"error": "Key was not found under user!", "exception": None}), 404
     return list_ssh_keys(username)
 
+
 @app.route('/<username>/update/', methods=['POST'])
+@crossdomain(app=app, origin='*')
 def update_user_info():
     json_data = get_json_data()
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
@@ -144,6 +150,7 @@ def update_user_info():
 
 
 @app.route('/signup/', methods=['POST'])
+@crossdomain(app=app, origin='*')
 def signup():
     json_data = get_json_data()
     username = json_data.get("username")
@@ -166,7 +173,9 @@ def signup():
     result = dbw.login(username, password)
     return jsonify({"token": result}), 200
 
+
 @app.route('/<username>/update_password/<temp_password_key>/', methods=['POST'])
+@crossdomain(app=app, origin='*')
 def update_user_password():
     json_data = get_json_data()
     dbw = DatabaseWrapper()
@@ -177,6 +186,7 @@ def update_user_password():
 
 
 @app.route('/classes/')
+@crossdomain(app=app, origin='*')
 def list_classes():
     """ covered by test 0_classes / `Can list classses` """
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
@@ -184,6 +194,7 @@ def list_classes():
 
 
 @app.route('/classes/', methods=["POST"])
+@crossdomain(app=app, origin='*')
 def new_class():
     """ covered by test 0_classes / `Can create classes` """
     json_data = get_json_data()
@@ -201,11 +212,14 @@ def new_class():
 
 
 @app.route('/classes/<class_url>/')
+@crossdomain(app=app, origin='*')
 def get_class(class_url):
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     return jsonify({"class": dbw.get_class_or_error(class_url)})
 
+
 @app.route('/classes/<class_url>/projects/')
+@crossdomain(app=app, origin='*')
 def list_projects(class_url):
     """ covered by test 2_projects / `Can list projects in a class` """
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
@@ -213,6 +227,7 @@ def list_projects(class_url):
 
 
 @app.route('/classes/<class_url>/owner/')
+@crossdomain(app=app, origin='*')
 def class_owner(class_url):
     """ covered by test 0_classes / `Can get the owner of a class`"""
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
@@ -224,6 +239,7 @@ def class_owner(class_url):
 
 
 @app.route('/classes/<class_url>/teachers/')
+@crossdomain(app=app, origin='*')
 def class_teachers(class_url):
     """ covered by test 0_classes / `Can get the teachers of a class`"""
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
@@ -235,6 +251,7 @@ def class_teachers(class_url):
 
 
 @app.route('/classes/<class_url>/students/')
+@crossdomain(app=app, origin='*')
 def class_students(class_url):
     """ civered by test 0_classes / `Can list students in a class` """
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
@@ -246,6 +263,7 @@ def class_students(class_url):
 
 
 @app.route('/classes/<class_url>/student/', methods=["POST"])
+@crossdomain(app=app, origin='*')
 def add_student(class_url):
     """ covered by test 0_classes / `Student can enroll in a class` """
     json_data = get_json_data()
@@ -263,6 +281,7 @@ def add_student(class_url):
 
 
 @app.route('/classes/<class_url>/teacher/', methods=["POST"])
+@crossdomain(app=app, origin='*')
 def add_teacher(class_url):
     """ covered by test 0_classes / `Teacher can add other teachers to class they own` """
     json_data = get_json_data()
@@ -280,6 +299,7 @@ def add_teacher(class_url):
 
 
 @app.route('/classes/<class_url>/projects/<project_url>/')
+@crossdomain(app=app, origin='*')
 def get_project(class_url, project_url):
     """ covered by test 2_projects / `Can list projects in a class` """
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
@@ -287,6 +307,7 @@ def get_project(class_url, project_url):
 
 
 @app.route('/classes/<class_url>/projects/<project_url>/owner/')
+@crossdomain(app=app, origin='*')
 def get_project_owner(class_url, project_url):
     """ covered by test 2_projects / `Can get owner of a project` """
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
@@ -298,6 +319,7 @@ def get_project_owner(class_url, project_url):
 
 
 @app.route('/classes/<class_url>/projects/', methods=["POST"])
+@crossdomain(app=app, origin='*')
 def new_project(class_url):
     """ covered by test 2_projects / `Teacher can create new project` """
     json_data = get_json_data()
@@ -321,6 +343,7 @@ def new_project(class_url):
 
 
 @app.route('/classes/<class_url>/projects/<project_url>/due_date/', methods=["POST"])
+@crossdomain(app=app, origin='*')
 def new_project_due_date(class_url, project_url):
     """ covered by test 2_projects / `Can update due date in a project` """
     json_data = get_json_data()
@@ -330,6 +353,7 @@ def new_project_due_date(class_url, project_url):
 
 
 @app.route('/classes/<class_name>/projects/<project_name>/make_submission/', methods=["POST"])
+@crossdomain(app=app, origin='*')
 def make_submission(class_name, project_name):
     json_data = get_json_data()
     owner = json_data.get("owner")
@@ -348,6 +372,7 @@ def make_submission(class_name, project_name):
 
 
 @app.route('/<username>/submissions/<submission_name>/')
+@crossdomain(app=app, origin='*')
 def get_submission(username, submission_name):
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     gitolite_url = username + "/submissions/" + submission_name
@@ -359,6 +384,7 @@ def get_submission(username, submission_name):
 
 
 @app.route('/<username>/submissions/<submission_name>/', methods=["DELETE"])
+@crossdomain(app=app, origin='*')
 def delete_user_submission(username, submission_name):
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     gitolite_url = username + "/submissions/" + submission_name
@@ -370,6 +396,7 @@ def delete_user_submission(username, submission_name):
 
 
 @app.route('/<username>/submissions/<submission_name>/contributors/', methods=['POST'])
+@crossdomain(app=app, origin='*')
 def add_contributor(username, submission_name):
     json_data = get_json_data()
     new_contributor = json_data.get("username")
@@ -382,6 +409,7 @@ def add_contributor(username, submission_name):
 
 
 @app.route('/<username>/submissions/<submission_name>/contributors/<removed_username>/', methods=['DELETE'])
+@crossdomain(app=app, origin='*')
 def remove_contributor(username, submission_name, removed_username):
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     try:
@@ -392,6 +420,7 @@ def remove_contributor(username, submission_name, removed_username):
 
 
 @app.route('/<username>/submissions/<submission_name>/contributors/', methods=['GET'])
+@crossdomain(app=app, origin='*')
 def get_contributors(username, submission_name):
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     return dbw.get_contributors(username, submission_name)
@@ -419,6 +448,7 @@ def get_file_or_directory(local_path, commit_path, filepath):
 
 
 @app.route('/<username>/submissions/<submission_name>/source/<commit_path>/<path:filepath>')
+@crossdomain(app=app, origin='*')
 def get_submission_file_or_directory(username, submission_name, commit_path, filepath):
     git_repo_path = username + "/submissions/" + submission_name
     local_path = STATIC_REPOS_ROOT + "/" + git_repo_path + ".git"
@@ -426,6 +456,7 @@ def get_submission_file_or_directory(username, submission_name, commit_path, fil
 
 
 @app.route('/classes/<class_url>/projects/<project_url>/source/<commit_path>/<path:filepath>')
+@crossdomain(app=app, origin='*')
 def get_project_file_or_directory(class_url, project_url, commit_path, filepath):
     git_repo_path = class_url + "/" + project_url
     local_path = STATIC_REPOS_ROOT + "/" + git_repo_path + ".git"
@@ -433,24 +464,28 @@ def get_project_file_or_directory(class_url, project_url, commit_path, filepath)
 
 
 @app.route('/<username>/projects/', methods=['GET'])
+@crossdomain(app=app, origin='*')
 def get_projects_for_user(username):
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     return jsonify({"projects": dbw.get_projects_for_user(username)})
 
 
 @app.route('/<username>/submissions/', methods=['GET'])
+@crossdomain(app=app, origin='*')
 def get_submissions_for_user(username):
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     return jsonify({"submissions": dbw.get_submissions_for_user(username)})
 
 
 @app.route('/<username>/classes/', methods=['GET'])
+@crossdomain(app=app, origin='*')
 def get_classes_for_user(username):
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     return jsonify({"classes": dbw.get_classes_for_user(username)})
 
 
 @app.route('/<username>/landing/', methods=['GET'])
+@crossdomain(app=app, origin='*')
 def get_landing_for_user(username):
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     classes = dbw.get_classes_for_user(username)
