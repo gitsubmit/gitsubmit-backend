@@ -305,7 +305,7 @@ class DatabaseWrapper(object):
 
         parent_project_url = submission["parent"]
 
-        parent_project_obj = project_db.find_one({"url_name": parent_project_url})
+        parent_project_obj = project_db.find_one({"gitolite_url": parent_project_url})
         if parent_project_obj is None:
             raise ProjectDoesNotExistError(str(parent_project_url))
 
