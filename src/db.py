@@ -211,7 +211,7 @@ class DatabaseWrapper(object):
             raise UrlNameAlreadyTakenError("That url name is already taken.")
 
         # Ensure the parent project exists
-        parent_project_obj = project_db.find_one({"url_name": parent_project_url})
+        parent_project_obj = project_db.find_one({"gitolite_url": parent_project_url})
         if parent_project_obj is None:
             raise ProjectDoesNotExistError(str(parent_project_url))
         parent_class_obj = class_db.find_one({"url_name": parent_project_obj["parent"]})

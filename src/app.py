@@ -325,8 +325,8 @@ def new_project_due_date(class_url, project_url):
 def make_submission(class_name, project_name):
     json_data = get_json_data()
     owner = json_data.get("owner")
-    url_name = '/' + owner + '/submissions/' + project_name + '/'
-    parent_url = '/' + class_name + '/projects/' + project_name + '/'
+    url_name = project_name
+    parent_url = class_name + '/' + project_name
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     try:
         dbw.create_submission(url_name, project_name, parent_url, owner)
@@ -450,3 +450,5 @@ def get_landing_for_user(username):
     submissions = dbw.get_submissions_for_user(username)
     return jsonify(dict(classes=classes, projects=projects, submissions=submissions))
 
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5556)
