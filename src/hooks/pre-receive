@@ -39,14 +39,14 @@ print gitsubmit
 if past_deadline:
     if branch == "refs/heads/latework":
         print "It is past the deadline for this project, but successfully submitted code to the latework branch."
+        print ""
         sys.exit(0)
     print "Sorry! You missed the deadline for this project!"
     print "All late work must be submitted to the branch 'latework'"
+    print ""
     sys.exit(1)
 else:
     print "Reminder: deadline is", deadline
     print "Today's date is:", datetime.datetime.now()
-    print "you're on branch", branch
-    print ""
     print ""
     sys.exit(1)
