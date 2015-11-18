@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from gitolite import GitoliteWrapper
 from config import TIME_FORMAT
 from binascii import b2a_hex
@@ -53,7 +53,7 @@ class DatabaseWrapper(object):
             salt = user_doc["salt"]
             # TODO: Better secret handling
             if b2a_hex(PBKDF2(password, salt).read(256)) == user_doc["hash"]:
-                return jwt.encode({'username': username, 'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=2)}, 'gitsubmitsecret')
+                return jwt.encode({'username': username, 'exp': datetime.utcnow() + timedelta(hours=2)}, 'gitsubmitsecret')
             else:
                 return False
 
@@ -238,6 +238,16 @@ class DatabaseWrapper(object):
                           "contributors": [owner]}
 
         return submission_db.insert_one(submission_obj)
+
+    def delete_submission(self, gitolite_url):
+        submission_db = self.mongo.gitsubmit.submissions
+        cursor = submission_db.find({"gitolite_url": gitolite_url})
+
+        if cursor.count() < 1:
+            raise SubmissionDoesNotExistError(gitolite_url)
+
+        for item in cursor:
+            submission_db.remove(item["_id"])
 
     def fix_dates_in_project_obj(self, project_obj):
         if "due" in project_obj.keys() and type(project_obj["due"]) is datetime:

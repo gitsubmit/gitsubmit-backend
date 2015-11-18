@@ -16,7 +16,7 @@ class APIClientLib(object):
         if data:
             print "sending data: "
             print data
-        result = method_callback(url, data=data)
+        result = method_callback(url, json=data)
         print "raw result:"
         print result.status_code
         print result.headers
@@ -32,6 +32,11 @@ class APIClientLib(object):
         print "data retrieved: "
         print return_obj
         return return_obj
+
+    def log_known_user_in(self, url_root):
+        url = url_root + "/login/"
+        method_cb = requests.post
+        return self.make_request(method_cb, url, {"username": "student1", "password": "verybadpw"})
 
     def update_due_date(self, url_root, class_name, project_name, new_due_date):
         updated_date_obj = {"date": new_due_date}
@@ -193,4 +198,9 @@ class APIClientLib(object):
     def get_users_submissions(self, url_root, user):
         url = url_root + "/" + user + "/submissions/"
         method_cb = requests.get
+        return self.make_request(method_cb, url)
+
+    def delete_submission(self, url_root, username, submission):
+        url = url_root + "/" + username + "/submissions/" + submission + "/"
+        method_cb = requests.delete
         return self.make_request(method_cb, url)
