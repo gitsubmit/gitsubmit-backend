@@ -204,21 +204,6 @@ class DatabaseWrapper(object):
         # Form the git clone url (see functional requirements)
         submission_full_git_url = owner + "/submissions/" + url_name
 
-        dest_dir = os.path.abspath(os.path.join(self.repo_root, submission_full_git_url))
-
-        exists = os.path.exists(dest_dir)
-
-        dest_file = os.path.join(dest_dir, "pre-receive")
-        src_hook = os.path.abspath(os.path.join("..", "hooks", "pre-receive"))
-
-        print "src", src_hook
-        print "dest", dest_file
-        print "exists", exists
-
-        shutil.copy(src_hook, dest_file)
-
-        raise Exception("stop it")
-
         submission_db = self.mongo.gitsubmit.submissions
         project_db = self.mongo.gitsubmit.projects
         class_db = self.mongo.gitsubmit.classes
@@ -257,6 +242,20 @@ class DatabaseWrapper(object):
                           "contributors": [owner]}
 
         result = submission_db.insert_one(submission_obj)
+
+        dest_dir = os.path.abspath(os.path.join(self.repo_root, submission_full_git_url))
+
+        exists = os.path.exists(dest_dir)
+
+        dest_file = os.path.join(dest_dir, "pre-receive")
+        src_hook = os.path.abspath(os.path.join("..", "hooks", "pre-receive"))
+
+        print "src", src_hook
+        print "dest", dest_file
+        print "exists", exists
+
+        shutil.copy(src_hook, dest_file)
+
         return result
 
     def delete_submission(self, gitolite_url):
