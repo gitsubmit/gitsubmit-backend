@@ -20,8 +20,9 @@ class SubmissionDoesNotExistError(Exception): pass
 
 class DatabaseWrapper(object):
 
-    def __init__(self, gitolite_admin_path, port=None):
+    def __init__(self, gitolite_admin_path, port=None, ssh_host="localhost"):
         self.mongo = MongoClient(port=port)
+        self.ssh_host = ssh_host
         self.glpath = gitolite_admin_path
 
     def create_user(self, username, email, password, first_name, last_name):
@@ -210,7 +211,7 @@ class DatabaseWrapper(object):
             raise UrlNameAlreadyTakenError("That url name is already taken.")
 
         # Ensure the parent project exists
-        parent_project_obj = project_db.find_one({"url_name": parent_project_url})
+        parent_project_obj = project_db.find_one({"gitolite_url": parent_project_url})
         if parent_project_obj is None:
             raise ProjectDoesNotExistError(str(parent_project_url))
         parent_class_obj = class_db.find_one({"url_name": parent_project_obj["parent"]})
@@ -227,7 +228,7 @@ class DatabaseWrapper(object):
 
         # This is what actually causes the fork, though
         parent_project_full_git_url = parent_class_url + "/" + parent_project_url
-        fork_callstring = "ssh git@localhost fork " + parent_project_full_git_url + " " + submission_full_git_url
+        fork_callstring = "ssh git@" + self.ssh_host + " fork " + parent_project_full_git_url + " " + submission_full_git_url
         subprocess.call(fork_callstring, shell=True)
 
         # If we got here, nothing went wrong, stuff it in the db
@@ -278,7 +279,6 @@ class DatabaseWrapper(object):
             raise SubmissionDoesNotExistError(str(username) + ": " + str(submission_name))
         return submission_doc["contributors"]
 
-
     def get_projects_for_user(self, username):
         project_db = self.mongo.gitsubmit.projects
         result_cursor = project_db.find({"owner": username}, projection={"_id": False})
@@ -286,16 +286,31 @@ class DatabaseWrapper(object):
         projects = [self.fix_dates_in_project_obj(p) for p in projects]
         return projects
 
-
     def get_submissions_for_user(self, username):
         submission_db = self.mongo.gitsubmit.submissions
         result_cursor = submission_db.find( { "$or": [ {"owner": username}, {"contributors": username} ] }, projection={"_id": False})
         submissions = [s for s in result_cursor]
         return submissions
 
-
     def get_classes_for_user(self, username):
         class_db = self.mongo.gitsubmit.classes
         result_cursor = class_db.find( { "$or": [ {"owner": username}, {"teachers": username}, {"students": username} ] }, projection={"_id": False})
         classes = [c for c in result_cursor]
         return classes
+
+    def is_past_deadline(self, submission_gitolite_url):
+        """ returns bool, datetime  (e.g. True, <datetime object> ) """
+        submission = self.get_submission_or_error(submission_gitolite_url)
+        project_db = self.mongo.gitsubmit.projects
+
+        parent_project_url = submission["parent"]
+
+        parent_project_obj = project_db.find_one({"url_name": parent_project_url})
+        if parent_project_obj is None:
+            raise ProjectDoesNotExistError(str(parent_project_url))
+
+        deadline = parent_project_obj["due"]
+        now = datetime.now()
+
+        result = now > deadline
+        return result, deadline
