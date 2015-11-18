@@ -1,3 +1,4 @@
+from security import crossdomain
 import json
 import sys
 
@@ -49,9 +50,16 @@ def get_json_data():
     return json_attempt
 
 
+@crossdomain(app=app, origin='*')
 @app.route('/')
 def hello_world():
     return jsonify({"hello": "world"})
+
+
+@crossdomain(app, origin='*')
+@app.route('/testpost/', methods=["POST"])
+def testpost():
+    return jsonify(request=str(request), request_data=str(request.data))
 
 
 @app.route('/<username>/ssh_keys/', methods=['GET'])
