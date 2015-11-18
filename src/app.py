@@ -1,3 +1,4 @@
+from security import crossdomain
 
 __authors__ = ["shawkins", "Tsintsir", "sonph", "LeBat"]  # add yourself!
 
@@ -39,6 +40,7 @@ def configured_main(custom_gitolite_path, custom_repository_root_path, database_
     return app
 
 
+@crossdomain(app=app, origin='*')
 @app.route('/')
 def hello_world():
     return jsonify({"hello": "world"})
