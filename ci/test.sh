@@ -35,8 +35,16 @@ pip install -r requirements.txt
 nohup docker run --name gitotestname -p 3022:22 -e SSH_KEY="$(cat /home/git/.ssh/id_rsa.pub)" elsdoerfer/gitolite &
 nohup docker run --name mongotestname -p 27117:27017 -e AUTH=no tutum/mongodb &
 
+
 sleep 10 # let docker warm up
 
+# copy our gitolite.rc over to the docker machine -- enables forking
+echo "==============================================================="
+echo "ll"
+ls -la
+echo "docker cp gitolite.rc gitotestname:/home/git/.gitolite.rc"
+docker cp gitolite.rc gitotestname:/home/git/.gitolite.rc
+echo "==============================================================="
 
 # Get a copy of the faked gitolite repo
 # note: see ~git/.ssh/config for info on this; contents below
