@@ -46,6 +46,12 @@ def hello_world():
     return jsonify({"hello": "world"})
 
 
+@crossdomain(app, origin='*')
+@app.route('/testpost/', methods=["POST"])
+def testpost():
+    return jsonify(request=str(request), request_data=str(request.data))
+
+
 @app.route('/<username>/ssh_keys/', methods=['GET'])
 def list_ssh_keys(username):
     """ covered by test 1_users / `Can list user's SSH keys` """
