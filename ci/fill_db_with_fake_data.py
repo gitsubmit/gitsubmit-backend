@@ -88,9 +88,9 @@ if __name__ == "__main__":
                        "test_class", False, (datetime.datetime.now() + datetime.timedelta(days=2)).strftime("%Y-%m-%d"), "teacher_usable")
 
     dbw.ssh_host = "test_gitsubmit_repo_as_student"
-    dbw.create_submission("turned_on_a_computer", "Student 1 turned on a computer", "turn_on_a_computer", "student1")
-    dbw.create_submission("used_a_computer", "Student 2 used a computer", "use_a_computer", "student2")
-    dbw.create_submission("test_submission", "a test submission", "test_project", "student_usable")
+    dbw.create_submission("turned_on_a_computer", "Student 1 turned on a computer", "intro_to_computers/turn_on_a_computer", "student1")
+    dbw.create_submission("used_a_computer", "Student 2 used a computer", "adv_computers/use_a_computer", "student2")
+    dbw.create_submission("test_submission", "a test submission", "test_class/test_project", "student_usable")
 
 
 
