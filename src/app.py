@@ -50,13 +50,13 @@ def get_json_data():
     return json_attempt
 
 
-@crossdomain(app=app, origin='*')
+@crossdomain(app=app, origin='*', methods=["GET", "POST"])
 @app.route('/')
 def hello_world():
     return jsonify({"hello": "world"})
 
 
-@crossdomain(app, origin='*')
+@crossdomain(app, origin='*', methods=["GET", "POST"])
 @app.route('/testpost/', methods=["POST"])
 def testpost():
     return jsonify(request=str(request), request_data=str(request.data))
