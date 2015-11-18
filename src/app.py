@@ -50,19 +50,19 @@ def get_json_data():
     return json_attempt
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'OPTIONS'])
 @crossdomain(app=app, origin='*')
 def hello_world():
     return jsonify({"hello": "world"})
 
 
-@app.route('/testpost/', methods=["POST"])
+@app.route('/testpost/', methods=["POST", 'OPTIONS'])
 @crossdomain(app=app, origin='*')
 def testpost():
     return jsonify(request=str(request), request_data=str(request.data))
 
 
-@app.route('/<username>/ssh_keys/', methods=['GET'])
+@app.route('/<username>/ssh_keys/', methods=['GET', 'OPTIONS'])
 @crossdomain(app=app, origin='*')
 def list_ssh_keys(username):
     """ covered by test 1_users / `Can list user's SSH keys` """
@@ -72,7 +72,7 @@ def list_ssh_keys(username):
     return jsonify(keys=gw.get_list_of_pretty_key_strings(username))
 
 
-@app.route('/login/', methods=['POST'])
+@app.route('/login/', methods=['POST', 'OPTIONS'])
 @crossdomain(app=app, origin='*')
 def login():
     json_data = get_json_data()
@@ -86,7 +86,7 @@ def login():
     return jsonify({"token": result}), 200
 
 
-@app.route('/<username>/ssh_keys/', methods=['POST'])
+@app.route('/<username>/ssh_keys/', methods=['POST', 'OPTIONS'])
 @crossdomain(app=app, origin='*')
 def post_new_ssh_key(username):
     """ covered by 1_users / `User can add an ssh key` """
@@ -115,7 +115,7 @@ def post_new_ssh_key(username):
         return jsonify({"error": "username not found!", "exception": str(e)}), 404
 
 
-@app.route('/<username>/ssh_keys/', methods=['DELETE'])
+@app.route('/<username>/ssh_keys/', methods=['DELETE', 'OPTIONS'])
 @crossdomain(app=app, origin='*')
 def remove_key_from_user(username):
     """ covered by 1_users / `User can delete an existing key from themselves` """
@@ -138,7 +138,7 @@ def remove_key_from_user(username):
     return list_ssh_keys(username)
 
 
-@app.route('/<username>/update/', methods=['POST'])
+@app.route('/<username>/update/', methods=['POST', 'OPTIONS'])
 @crossdomain(app=app, origin='*')
 def update_user_info():
     json_data = get_json_data()
@@ -149,7 +149,7 @@ def update_user_info():
     return jsonify(email_added=new_email)
 
 
-@app.route('/signup/', methods=['POST'])
+@app.route('/signup/', methods=['POST', 'OPTIONS'])
 @crossdomain(app=app, origin='*')
 def signup():
     json_data = get_json_data()
@@ -174,7 +174,7 @@ def signup():
     return jsonify({"token": result}), 200
 
 
-@app.route('/<username>/update_password/<temp_password_key>/', methods=['POST'])
+@app.route('/<username>/update_password/<temp_password_key>/', methods=['POST', 'OPTIONS'])
 @crossdomain(app=app, origin='*')
 def update_user_password():
     json_data = get_json_data()
@@ -185,7 +185,7 @@ def update_user_password():
     return jsonify(password_added=new_password)
 
 
-@app.route('/classes/')
+@app.route('/classes/', methods=['GET', 'OPTIONS'])
 @crossdomain(app=app, origin='*')
 def list_classes():
     """ covered by test 0_classes / `Can list classses` """
@@ -193,7 +193,7 @@ def list_classes():
     return jsonify(classes=dbw.get_all_classes())
 
 
-@app.route('/classes/', methods=["POST"])
+@app.route('/classes/', methods=["POST", 'OPTIONS'])
 @crossdomain(app=app, origin='*')
 def new_class():
     """ covered by test 0_classes / `Can create classes` """
@@ -211,14 +211,14 @@ def new_class():
         return jsonify({"error": "Url name was already taken!", "exception": str(e)}), 403
 
 
-@app.route('/classes/<class_url>/')
+@app.route('/classes/<class_url>/', methods=['GET', 'OPTIONS'])
 @crossdomain(app=app, origin='*')
 def get_class(class_url):
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     return jsonify({"class": dbw.get_class_or_error(class_url)})
 
 
-@app.route('/classes/<class_url>/projects/')
+@app.route('/classes/<class_url>/projects/', methods=['GET', 'OPTIONS'])
 @crossdomain(app=app, origin='*')
 def list_projects(class_url):
     """ covered by test 2_projects / `Can list projects in a class` """
@@ -226,7 +226,7 @@ def list_projects(class_url):
     return jsonify(projects=dbw.get_all_projects_for_class(class_url))
 
 
-@app.route('/classes/<class_url>/owner/')
+@app.route('/classes/<class_url>/owner/', methods=['GET', 'OPTIONS'])
 @crossdomain(app=app, origin='*')
 def class_owner(class_url):
     """ covered by test 0_classes / `Can get the owner of a class`"""
@@ -238,7 +238,7 @@ def class_owner(class_url):
         return jsonify({"error": "class not found!", "exception": str(e)}), 404
 
 
-@app.route('/classes/<class_url>/teachers/')
+@app.route('/classes/<class_url>/teachers/', methods=['GET', 'OPTIONS'])
 @crossdomain(app=app, origin='*')
 def class_teachers(class_url):
     """ covered by test 0_classes / `Can get the teachers of a class`"""
@@ -250,7 +250,7 @@ def class_teachers(class_url):
         return jsonify({"error": "class not found!", "exception": str(e)}), 404
 
 
-@app.route('/classes/<class_url>/students/')
+@app.route('/classes/<class_url>/students/', methods=['GET', 'OPTIONS'])
 @crossdomain(app=app, origin='*')
 def class_students(class_url):
     """ civered by test 0_classes / `Can list students in a class` """
@@ -262,7 +262,7 @@ def class_students(class_url):
         return jsonify({"error": "class not found!", "exception": str(e)}), 404
 
 
-@app.route('/classes/<class_url>/student/', methods=["POST"])
+@app.route('/classes/<class_url>/student/', methods=["POST", 'OPTIONS'])
 @crossdomain(app=app, origin='*')
 def add_student(class_url):
     """ covered by test 0_classes / `Student can enroll in a class` """
@@ -280,7 +280,7 @@ def add_student(class_url):
     return jsonify(class_updated=dbw.get_class_or_error(class_url))
 
 
-@app.route('/classes/<class_url>/teacher/', methods=["POST"])
+@app.route('/classes/<class_url>/teacher/', methods=["POST", 'OPTIONS'])
 @crossdomain(app=app, origin='*')
 def add_teacher(class_url):
     """ covered by test 0_classes / `Teacher can add other teachers to class they own` """
@@ -298,7 +298,7 @@ def add_teacher(class_url):
     return jsonify(class_updated=dbw.get_class_or_error(class_url))
 
 
-@app.route('/classes/<class_url>/projects/<project_url>/')
+@app.route('/classes/<class_url>/projects/<project_url>/', methods=['GET', 'OPTIONS'])
 @crossdomain(app=app, origin='*')
 def get_project(class_url, project_url):
     """ covered by test 2_projects / `Can list projects in a class` """
@@ -306,7 +306,7 @@ def get_project(class_url, project_url):
     return jsonify(project=dbw.get_project_or_error(class_url, project_url))
 
 
-@app.route('/classes/<class_url>/projects/<project_url>/owner/')
+@app.route('/classes/<class_url>/projects/<project_url>/owner/', methods=['GET', 'OPTIONS'])
 @crossdomain(app=app, origin='*')
 def get_project_owner(class_url, project_url):
     """ covered by test 2_projects / `Can get owner of a project` """
@@ -318,7 +318,7 @@ def get_project_owner(class_url, project_url):
         return jsonify({"error": "project not found!", "exception": str(e)}), 404
 
 
-@app.route('/classes/<class_url>/projects/', methods=["POST"])
+@app.route('/classes/<class_url>/projects/', methods=["POST", 'OPTIONS'])
 @crossdomain(app=app, origin='*')
 def new_project(class_url):
     """ covered by test 2_projects / `Teacher can create new project` """
@@ -342,7 +342,7 @@ def new_project(class_url):
         return jsonify({"error": "Class does not exist!", "exception": str(e)}), 404
 
 
-@app.route('/classes/<class_url>/projects/<project_url>/due_date/', methods=["POST"])
+@app.route('/classes/<class_url>/projects/<project_url>/due_date/', methods=["POST", 'OPTIONS'])
 @crossdomain(app=app, origin='*')
 def new_project_due_date(class_url, project_url):
     """ covered by test 2_projects / `Can update due date in a project` """
@@ -352,7 +352,7 @@ def new_project_due_date(class_url, project_url):
     return jsonify(project_updated=dbw.update_project_due_date(class_url, project_url, due_date))
 
 
-@app.route('/classes/<class_name>/projects/<project_name>/make_submission/', methods=["POST"])
+@app.route('/classes/<class_name>/projects/<project_name>/make_submission/', methods=["POST", 'OPTIONS'])
 @crossdomain(app=app, origin='*')
 def make_submission(class_name, project_name):
     json_data = get_json_data()
@@ -371,7 +371,7 @@ def make_submission(class_name, project_name):
         return jsonify({"error": "Class does not exist!", "exception": str(e)}), 404
 
 
-@app.route('/<username>/submissions/<submission_name>/')
+@app.route('/<username>/submissions/<submission_name>/', methods=['GET', 'OPTIONS'])
 @crossdomain(app=app, origin='*')
 def get_submission(username, submission_name):
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
@@ -383,7 +383,7 @@ def get_submission(username, submission_name):
         return jsonify(error="submission does not exist!", exception=str(e)), 404
 
 
-@app.route('/<username>/submissions/<submission_name>/', methods=["DELETE"])
+@app.route('/<username>/submissions/<submission_name>/', methods=["DELETE", 'OPTIONS'])
 @crossdomain(app=app, origin='*')
 def delete_user_submission(username, submission_name):
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
@@ -395,7 +395,7 @@ def delete_user_submission(username, submission_name):
         return jsonify(error="submission does not exist!"), 404
 
 
-@app.route('/<username>/submissions/<submission_name>/contributors/', methods=['POST'])
+@app.route('/<username>/submissions/<submission_name>/contributors/', methods=['POST', 'OPTIONS'])
 @crossdomain(app=app, origin='*')
 def add_contributor(username, submission_name):
     json_data = get_json_data()
@@ -408,7 +408,7 @@ def add_contributor(username, submission_name):
         return jsonify({"error": "Placeholder error until exceptions are raised by the backend.", "exception": str(e)}), 404
 
 
-@app.route('/<username>/submissions/<submission_name>/contributors/<removed_username>/', methods=['DELETE'])
+@app.route('/<username>/submissions/<submission_name>/contributors/<removed_username>/', methods=['DELETE', 'OPTIONS'])
 @crossdomain(app=app, origin='*')
 def remove_contributor(username, submission_name, removed_username):
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
@@ -419,7 +419,7 @@ def remove_contributor(username, submission_name, removed_username):
         return jsonify({"error": "Placeholder error until exceptions are raised by the backend.", "exception": str(e)}), 404
 
 
-@app.route('/<username>/submissions/<submission_name>/contributors/', methods=['GET'])
+@app.route('/<username>/submissions/<submission_name>/contributors/', methods=['GET', 'OPTIONS'])
 @crossdomain(app=app, origin='*')
 def get_contributors(username, submission_name):
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
@@ -447,7 +447,7 @@ def get_file_or_directory(local_path, commit_path, filepath):
     return resp
 
 
-@app.route('/<username>/submissions/<submission_name>/source/<commit_path>/<path:filepath>')
+@app.route('/<username>/submissions/<submission_name>/source/<commit_path>/<path:filepath>', methods=['GET', 'OPTIONS'])
 @crossdomain(app=app, origin='*')
 def get_submission_file_or_directory(username, submission_name, commit_path, filepath):
     git_repo_path = username + "/submissions/" + submission_name
@@ -455,7 +455,7 @@ def get_submission_file_or_directory(username, submission_name, commit_path, fil
     return get_file_or_directory(local_path, commit_path, filepath)
 
 
-@app.route('/classes/<class_url>/projects/<project_url>/source/<commit_path>/<path:filepath>')
+@app.route('/classes/<class_url>/projects/<project_url>/source/<commit_path>/<path:filepath>', methods=['GET', 'OPTIONS'])
 @crossdomain(app=app, origin='*')
 def get_project_file_or_directory(class_url, project_url, commit_path, filepath):
     git_repo_path = class_url + "/" + project_url
@@ -463,28 +463,28 @@ def get_project_file_or_directory(class_url, project_url, commit_path, filepath)
     return get_file_or_directory(local_path, commit_path, filepath)
 
 
-@app.route('/<username>/projects/', methods=['GET'])
+@app.route('/<username>/projects/', methods=['GET', 'OPTIONS'])
 @crossdomain(app=app, origin='*')
 def get_projects_for_user(username):
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     return jsonify({"projects": dbw.get_projects_for_user(username)})
 
 
-@app.route('/<username>/submissions/', methods=['GET'])
+@app.route('/<username>/submissions/', methods=['GET', 'OPTIONS'])
 @crossdomain(app=app, origin='*')
 def get_submissions_for_user(username):
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     return jsonify({"submissions": dbw.get_submissions_for_user(username)})
 
 
-@app.route('/<username>/classes/', methods=['GET'])
+@app.route('/<username>/classes/', methods=['GET', 'OPTIONS'])
 @crossdomain(app=app, origin='*')
 def get_classes_for_user(username):
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     return jsonify({"classes": dbw.get_classes_for_user(username)})
 
 
-@app.route('/<username>/landing/', methods=['GET'])
+@app.route('/<username>/landing/', methods=['GET', 'OPTIONS'])
 @crossdomain(app=app, origin='*')
 def get_landing_for_user(username):
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
