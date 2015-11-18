@@ -60,6 +60,7 @@ GL_PATH=$(readlink -f gitolite-admin/)
 
 # do the setup we need for pyolite to work
 cd $GL_PATH
+echo 'include     "repos/**/**/*.conf"' >> conf/gitolite.conf
 echo 'include     "repos/**/*.conf"' >> conf/gitolite.conf
 echo 'include     "repos/*.conf"' >> conf/gitolite.conf
 git add conf
