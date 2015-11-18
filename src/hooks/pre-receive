@@ -1,0 +1,52 @@
+#!/virtualenvs/gitsubmit_env/bin/python
+import os, sys, datetime
+from config import GITOLITE_ADMIN_PATH, DATABASE_PORT, STATIC_REPOS_ROOT
+from db import DatabaseWrapper
+
+current_dir = os.getcwd()
+relpath = os.path.relpath(current_dir, STATIC_REPOS_ROOT)
+
+relpath = relpath.replace(".git", "")
+
+dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
+result = dbw.get_submission_or_error(relpath)
+
+past_deadline, deadline = dbw.is_past_deadline(relpath)
+input = raw_input()
+branch = input.split()[2]
+
+welcome = """  _      __    __                
+ | | /| / /__ / /______  __ _  ___       
+ | |/ |/ / -_) / __/ _ \/  ' \/ -_)      
+ |__/|__/\__/_/\__/\___/_/_/_/\__/  
+"""
+to = """              __
+             / /____                        
+            / __/ _ \                       
+            \__/\___/  
+"""
+gitsubmit = """  ______ __  ____     __         _ __  __
+ / ___(_) /_/ __/_ __/ /  __ _  (_) /_/ /
+/ (_ / / __/\ \/ // / _ \/  ' \/ / __/_/ 
+\___/_/\__/___/\_,_/_.__/_/_/_/_/\__(_)  
+                                         
+"""
+
+print welcome
+print to
+print gitsubmit
+
+if past_deadline:
+    if branch == "refs/heads/latework":
+        print "It is past the deadline for this project, but successfully submitted code to the latework branch."
+        sys.exit(0)
+    print "Sorry! You missed the deadline for this project!"
+    print "All late work must be submitted to the branch 'latework'"
+    sys.exit(1)
+else:
+    print "Reminder: deadline is", deadline
+    print "Today's date is:", datetime.datetime.now()
+    print "you're on branch", branch
+    print ""
+    print ""
+    sys.exit(1)

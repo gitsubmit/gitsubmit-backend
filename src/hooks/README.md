@@ -1,0 +1,1 @@
+These are files that will need to be placed in each git repo's hooks folder, to facilitate deadline checking
