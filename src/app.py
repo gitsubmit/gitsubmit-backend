@@ -440,20 +440,19 @@ def get_file_or_directory(local_path, commit_path, filepath):
     repo = GitRepo(local_path)
     object = repo.get_file_or_directory(commit_path, filepath)
 
-    resp = Response(mimetype="text/plain")
-
     if object["type"] == "tree":
-        resp.headers['is_tree'] = True
-        response_content = ""
-        for item in object["file_list"]:
-            response_content += item["name"]
-            if item["type"] == "tree":
-                response_content += "/"
-            response_content += "\n"
-        resp.set_data(response_content)
+        json_data = {"files": []}
+        dir_list = [item for item in object["file_list"] if item["type"] == "tree"]
+        file_list = [item for item in object["file_list"] if item["type"] != "tree"]
+        for item in dir_list:
+            json_data["files"].append({"type": "dir", "name": item["name"]})
+        for item in file_list:
+            json_data["files"].append({"type": "file", "name": item["name"]})
+        return jsonify(json_data)
     else:
+        resp = Response(mimetype="text/plain")
         resp.set_data(object["content"])
-    return resp
+        return resp
 
 
 @app.route('/<username>/submissions/<submission_name>/source/<commit_path>/<path:filepath>', methods=['GET', 'OPTIONS'])
