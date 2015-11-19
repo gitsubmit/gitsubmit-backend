@@ -232,7 +232,9 @@ def get_class(class_url):
 def list_projects(class_url):
     """ covered by test 2_projects / `Can list projects in a class` """
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
-    return jsonify(projects=dbw.get_all_projects_for_class(class_url))
+    projects = dbw.get_ontime_projects_for_class(class_url)
+    overdue_projects = dbw.get_overdue_projects_for_class(class_url)
+    return jsonify(projects=projects, overdue_projects=overdue_projects)
 
 
 @app.route('/classes/<class_url>/owner/', methods=['GET', 'OPTIONS'])
