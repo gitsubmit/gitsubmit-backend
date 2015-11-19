@@ -143,6 +143,7 @@ def remove_key_from_user(username):
 
 @app.route('/<username>/update/', methods=['POST', 'OPTIONS'])
 @crossdomain(app=app, origin='*')
+@basic_auth
 def update_user_info():
     json_data = get_json_data()
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
@@ -200,6 +201,7 @@ def list_classes():
 
 @app.route('/classes/', methods=["POST", 'OPTIONS'])
 @crossdomain(app=app, origin='*')
+@basic_auth
 def new_class():
     """ covered by test 0_classes / `Can create classes` """
     json_data = get_json_data()
@@ -230,7 +232,9 @@ def get_class(class_url):
 def list_projects(class_url):
     """ covered by test 2_projects / `Can list projects in a class` """
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
-    return jsonify(projects=dbw.get_all_projects_for_class(class_url))
+    projects = dbw.get_ontime_projects_for_class(class_url)
+    overdue_projects = dbw.get_overdue_projects_for_class(class_url)
+    return jsonify(projects=projects, overdue_projects=overdue_projects)
 
 
 @app.route('/classes/<class_url>/owner/', methods=['GET', 'OPTIONS'])
@@ -327,6 +331,7 @@ def get_project_owner(class_url, project_url):
 
 @app.route('/classes/<class_url>/projects/', methods=["POST", 'OPTIONS'])
 @crossdomain(app=app, origin='*')
+@basic_auth
 def new_project(class_url):
     """ covered by test 2_projects / `Teacher can create new project` """
     json_data = get_json_data()
@@ -457,6 +462,14 @@ def get_file_or_directory(local_path, commit_path, filepath):
         return resp, 200, {"is_tree": False}
 
 
+@app.route('/<username>/submissions/<submission_name>/source/<commit_path>/', methods=['GET', 'OPTIONS'])
+@crossdomain(app=app, origin='*')
+def get_submission_root_directory(username, submission_name, commit_path):
+    git_repo_path = username + "/submissions/" + submission_name
+    local_path = STATIC_REPOS_ROOT + "/" + git_repo_path + ".git"
+    return get_file_or_directory(local_path, commit_path, None)
+
+
 @app.route('/<username>/submissions/<submission_name>/source/<commit_path>/<path:filepath>', methods=['GET', 'OPTIONS'])
 @crossdomain(app=app, origin='*')
 def get_submission_file_or_directory(username, submission_name, commit_path, filepath):
@@ -471,6 +484,14 @@ def get_project_file_or_directory(class_url, project_url, commit_path, filepath)
     git_repo_path = class_url + "/" + project_url
     local_path = STATIC_REPOS_ROOT + "/" + git_repo_path + ".git"
     return get_file_or_directory(local_path, commit_path, filepath)
+
+
+@app.route('/classes/<class_url>/projects/<project_url>/source/<commit_path>/', methods=['GET', 'OPTIONS'])
+@crossdomain(app=app, origin='*')
+def get_project_root_directory(class_url, project_url, commit_path):
+    git_repo_path = class_url + "/" + project_url
+    local_path = STATIC_REPOS_ROOT + "/" + git_repo_path + ".git"
+    return get_file_or_directory(local_path, commit_path, None)
 
 
 @app.route('/<username>/projects/', methods=['GET', 'OPTIONS'])

@@ -29,7 +29,10 @@ class GitRepo(object):
         else:
             commit = self.repo.commit(commit_or_branch)
         tree = commit.tree
-        file = tree[path]
+        if path is None:
+            file = tree
+        else:
+            file = tree[path]
 
         object = {
             'type': file.type

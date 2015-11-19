@@ -101,6 +101,16 @@ class DatabaseWrapper(object):
         class_db.update({"url_name": class_url}, class_obj)
         return class_obj
 
+    def get_overdue_projects_for_class(self, class_url):
+        project_db = self.mongo.gitsubmit.projects
+        projects = [self.fix_dates_in_project_obj(p) for p in project_db.find({"parent": class_url}, projection={"_id": False}) if p["due"] <= datetime.now()]
+        return projects
+
+    def get_ontime_projects_for_class(self, class_url):
+        project_db = self.mongo.gitsubmit.projects
+        projects = [self.fix_dates_in_project_obj(p) for p in project_db.find({"parent": class_url}, projection={"_id": False}) if p["due"] > datetime.now()]
+        return projects
+
     def get_all_projects_for_class(self, class_url):
         project_db = self.mongo.gitsubmit.projects
         projects = [self.fix_dates_in_project_obj(p) for p in project_db.find({"parent": class_url}, projection={"_id": False})]
