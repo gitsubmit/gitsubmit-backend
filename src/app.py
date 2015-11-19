@@ -1,10 +1,7 @@
-from security import crossdomain
-import json
-import sys
-
 __authors__ = ["shawkins", "Tsintsir", "sonph", "LeBat"]  # add yourself!
 
 # internal (project libs)
+from security import crossdomain, basic_auth
 from config import GITOLITE_ADMIN_PATH, DATABASE_PORT, STATIC_REPOS_ROOT
 from db import UsernameAlreadyTakenError, EmailAlreadyTakenError, SubmissionDoesNotExistError
 from git_browser import GitRepo
@@ -16,13 +13,14 @@ from db import  ClassDoesNotExistError, UrlNameAlreadyTakenError, DatabaseWrappe
 from email.utils import parseaddr
 
 # external (pip packages)
-from flask import Flask, jsonify, request, Response
+from flask import Flask, jsonify, request, Response, g
 from sshpubkeys import InvalidKeyException
 
 app = Flask(__name__)
 app.debug = True  # TODO: unset this after release!
 
 
+# note: this is unrouted
 def configured_main(custom_gitolite_path, custom_repository_root_path, database_port):
     """ For testing versions of the API, we can point to a different gitolite admin directory, and a different database.
     Note that if this is not called (instead, gunicorn is invoked with app:app) then all defaults remain.
@@ -42,6 +40,7 @@ def configured_main(custom_gitolite_path, custom_repository_root_path, database_
     return app
 
 
+# note: this is unrouted
 def get_json_data():
     if len(request.form) > 0:  # we got form data
         return request.form
@@ -50,20 +49,30 @@ def get_json_data():
     return json_attempt
 
 
+# note: this is unrouted
+def get_current_logged_in_user():
+    token = getattr(g, 'token', dict())
+    return token.get('username', None)
+
+
 @app.route('/', methods=['GET', 'OPTIONS'])
 @crossdomain(app=app, origin='*')
 def hello_world():
+    print get_current_logged_in_user()
     return jsonify({"hello": "world"})
 
 
 @app.route('/testpost/', methods=["POST", 'OPTIONS'])
 @crossdomain(app=app, origin='*')
+@basic_auth
 def testpost():
+    print get_current_logged_in_user()
     return jsonify(request=str(request), request_data=str(request.data))
 
 
 @app.route('/<username>/ssh_keys/', methods=['GET', 'OPTIONS'])
 @crossdomain(app=app, origin='*')
+@basic_auth
 def list_ssh_keys(username):
     """ covered by test 1_users / `Can list user's SSH keys` """
     gw = GitoliteWrapper(GITOLITE_ADMIN_PATH)
@@ -82,20 +91,17 @@ def login():
     result = dbw.login(username, password)
     if not result:
         return jsonify({"error": "bad login credentials!", "exception": None}), 400
-    # TODO: authentication: return token from login
     return jsonify({"token": result}), 200
 
 
 @app.route('/<username>/ssh_keys/', methods=['POST', 'OPTIONS'])
 @crossdomain(app=app, origin='*')
+@basic_auth
 def post_new_ssh_key(username):
     """ covered by 1_users / `User can add an ssh key` """
     json_data = get_json_data()
     if False:  # TODO: ensure that username exists
         return jsonify({"error": "username does not exist"}), 404
-
-    if False:  # TODO: ensure user is authed and is self
-        return jsonify({"error": "Unauthorized"}), 401
 
     pkey_contents = json_data.get("pkey_contents")
 
@@ -120,9 +126,6 @@ def post_new_ssh_key(username):
 def remove_key_from_user(username):
     """ covered by 1_users / `User can delete an existing key from themselves` """
     json_data = get_json_data()
-    if False:  # TODO: ensure user is authed and is self
-        return jsonify({"error": "Unauthorized"}), 401
-
     pkey = json_data.get("pkey")
 
     gw = GitoliteWrapper(GITOLITE_ADMIN_PATH)
@@ -143,7 +146,9 @@ def remove_key_from_user(username):
 def update_user_info():
     json_data = get_json_data()
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
-    username = "konrad" #TODO: get currently logged in user
+    username = get_current_logged_in_user()
+    if username is None:
+        username = "konrad"  # TODO: instead raise here
     new_email = json_data.get("email")
     dbw.update_email(username, new_email)
     return jsonify(email_added=new_email)
@@ -202,7 +207,9 @@ def new_class():
     url_name = json_data.get("url_name")
     description = json_data.get("description")
 
-    owner = "spencer"  # TODO: get currently logged in user
+    owner = get_current_logged_in_user()
+    if owner is None:
+        owner = "spencer"  # TODO: instead raise here
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     try:
         c = dbw.create_class(url_name, class_name, description, owner)
@@ -330,7 +337,9 @@ def new_project(class_url):
     max_size = int(json_data.get("max_members"))
     due_date = json_data.get("due_date")  # TODO: check formatting from js
 
-    owner = "spencer"  # TODO: get currently logged in user
+    owner = get_current_logged_in_user()
+    if owner is None:
+        owner = "spencer"  # TODO: instead raise here
 
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     try:

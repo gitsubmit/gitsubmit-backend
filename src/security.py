@@ -3,6 +3,7 @@ from datetime import timedelta
 __author__ = 'Tsintsir'
 
 from db import DatabaseWrapper
+from flask import g
 from functools import wraps, update_wrapper
 from flask import request, Response, make_response
 import jwt
@@ -38,10 +39,11 @@ def token_decode_error():
 def basic_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        token = request.token
+        token = request.headers['Authorization'].split(" ")[1]
         # TODO: Better secret handling.
         try:
-            jwt.decode(token, 'gitsubmitsecret')
+            result = jwt.decode(token, 'gitsubmitsecret')
+            g.token = result
         except jwt.ExpiredSignatureError as e:
             return token_expiration_error()
         except jwt.DecodeError as e:
