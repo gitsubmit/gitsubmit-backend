@@ -72,6 +72,7 @@ def testpost():
 
 @app.route('/<username>/ssh_keys/', methods=['GET', 'OPTIONS'])
 @crossdomain(app=app, origin='*')
+@basic_auth
 def list_ssh_keys(username):
     """ covered by test 1_users / `Can list user's SSH keys` """
     gw = GitoliteWrapper(GITOLITE_ADMIN_PATH)
@@ -95,6 +96,7 @@ def login():
 
 @app.route('/<username>/ssh_keys/', methods=['POST', 'OPTIONS'])
 @crossdomain(app=app, origin='*')
+@basic_auth
 def post_new_ssh_key(username):
     """ covered by 1_users / `User can add an ssh key` """
     json_data = get_json_data()
