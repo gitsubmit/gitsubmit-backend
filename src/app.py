@@ -443,16 +443,18 @@ def get_file_or_directory(local_path, commit_path, filepath):
     if object["type"] == "tree":
         json_data = {"files": []}
         dir_list = [item for item in object["file_list"] if item["type"] == "tree"]
+        dir_list.sort()
         file_list = [item for item in object["file_list"] if item["type"] != "tree"]
+        file_list.sort()
         for item in dir_list:
             json_data["files"].append({"type": "dir", "name": item["name"]})
         for item in file_list:
             json_data["files"].append({"type": "file", "name": item["name"]})
-        return jsonify(json_data)
+        return jsonify(json_data), 200, {"is_tree": True}
     else:
         resp = Response(mimetype="text/plain")
         resp.set_data(object["content"])
-        return resp
+        return resp, 200, {"is_tree": False}
 
 
 @app.route('/<username>/submissions/<submission_name>/source/<commit_path>/<path:filepath>', methods=['GET', 'OPTIONS'])
