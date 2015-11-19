@@ -457,6 +457,14 @@ def get_file_or_directory(local_path, commit_path, filepath):
         return resp, 200, {"is_tree": False}
 
 
+@app.route('/<username>/submissions/<submission_name>/source/<commit_path>/', methods=['GET', 'OPTIONS'])
+@crossdomain(app=app, origin='*')
+def get_submission_root_directory(username, submission_name, commit_path):
+    git_repo_path = username + "/submissions/" + submission_name
+    local_path = STATIC_REPOS_ROOT + "/" + git_repo_path + ".git"
+    return get_file_or_directory(local_path, commit_path, None)
+
+
 @app.route('/<username>/submissions/<submission_name>/source/<commit_path>/<path:filepath>', methods=['GET', 'OPTIONS'])
 @crossdomain(app=app, origin='*')
 def get_submission_file_or_directory(username, submission_name, commit_path, filepath):
@@ -471,6 +479,14 @@ def get_project_file_or_directory(class_url, project_url, commit_path, filepath)
     git_repo_path = class_url + "/" + project_url
     local_path = STATIC_REPOS_ROOT + "/" + git_repo_path + ".git"
     return get_file_or_directory(local_path, commit_path, filepath)
+
+
+@app.route('/classes/<class_url>/projects/<project_url>/source/<commit_path>/', methods=['GET', 'OPTIONS'])
+@crossdomain(app=app, origin='*')
+def get_project_root_directory(class_url, project_url, commit_path):
+    git_repo_path = class_url + "/" + project_url
+    local_path = STATIC_REPOS_ROOT + "/" + git_repo_path + ".git"
+    return get_file_or_directory(local_path, commit_path, None)
 
 
 @app.route('/<username>/projects/', methods=['GET', 'OPTIONS'])
