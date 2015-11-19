@@ -51,7 +51,7 @@ def basic_auth(f):
 
 
 # needed since api.gitsubmit is a different domain than gitsubmit
-def crossdomain(app=None, origin=None, methods=None, headers='Origin, X-Requested-With, Content-Type',
+def crossdomain(app=None, origin=None, methods=None, headers='Origin, X-Requested-With, Content-Type, Authorization, Accept',
                 max_age=21600, attach_to_all=True,
                 automatic_options=True):
     if methods is not None:
