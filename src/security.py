@@ -39,7 +39,7 @@ def token_decode_error():
 def basic_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        token = request.headers['Authorization'].split(" ")[1]
+        token = request.headers.get('Authorization').split(" ")[1]
         # TODO: Better secret handling.
         try:
             result = jwt.decode(token, 'gitsubmitsecret')
