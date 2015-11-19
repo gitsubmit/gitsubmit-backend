@@ -143,6 +143,7 @@ def remove_key_from_user(username):
 
 @app.route('/<username>/update/', methods=['POST', 'OPTIONS'])
 @crossdomain(app=app, origin='*')
+@basic_auth
 def update_user_info():
     json_data = get_json_data()
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
@@ -200,6 +201,7 @@ def list_classes():
 
 @app.route('/classes/', methods=["POST", 'OPTIONS'])
 @crossdomain(app=app, origin='*')
+@basic_auth
 def new_class():
     """ covered by test 0_classes / `Can create classes` """
     json_data = get_json_data()
@@ -327,6 +329,7 @@ def get_project_owner(class_url, project_url):
 
 @app.route('/classes/<class_url>/projects/', methods=["POST", 'OPTIONS'])
 @crossdomain(app=app, origin='*')
+@basic_auth
 def new_project(class_url):
     """ covered by test 2_projects / `Teacher can create new project` """
     json_data = get_json_data()
