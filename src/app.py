@@ -1,3 +1,5 @@
+from gitdb.exc import BadName
+
 __authors__ = ["shawkins", "Tsintsir", "sonph", "LeBat"]  # add yourself!
 
 # internal (project libs)
@@ -491,7 +493,10 @@ def get_project_file_or_directory(class_url, project_url, commit_path, filepath)
 def get_project_root_directory(class_url, project_url, commit_path):
     git_repo_path = class_url + "/" + project_url
     local_path = STATIC_REPOS_ROOT + "/" + git_repo_path + ".git"
-    return get_file_or_directory(local_path, commit_path, None)
+    try:
+        return get_file_or_directory(local_path, commit_path, None)
+    except BadName as e:
+        return jsonify({"files": []}), 200, {"is_tree": True}
 
 
 @app.route('/<username>/projects/', methods=['GET', 'OPTIONS'])
