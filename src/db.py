@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
+import os
+import shutil
 from gitolite import GitoliteWrapper
-from config import TIME_FORMAT
+from config import TIME_FORMAT, STATIC_REPOS_ROOT
 from binascii import b2a_hex
 from os import urandom
 from pymongo import MongoClient
@@ -20,10 +22,11 @@ class SubmissionDoesNotExistError(Exception): pass
 
 class DatabaseWrapper(object):
 
-    def __init__(self, gitolite_admin_path, port=None, ssh_host="localhost"):
+    def __init__(self, gitolite_admin_path, port=None, ssh_host="localhost", repositories_root=STATIC_REPOS_ROOT):
         self.mongo = MongoClient(port=port)
         self.ssh_host = ssh_host
         self.glpath = gitolite_admin_path
+        self.repo_root = repositories_root
 
     def create_user(self, username, email, password, first_name, last_name):
         db = self.mongo.gitsubmit.users
@@ -248,7 +251,22 @@ class DatabaseWrapper(object):
                           "parent": parent_project_url,
                           "contributors": [owner]}
 
-        return submission_db.insert_one(submission_obj)
+        result = submission_db.insert_one(submission_obj)
+
+        dest_dir = os.path.abspath(os.path.join(self.repo_root, submission_full_git_url))
+
+        exists = os.path.exists(dest_dir)
+
+        dest_file = os.path.join(dest_dir, "pre-receive")
+        src_hook = os.path.abspath(os.path.join("hooks", "pre-receive"))
+
+        print "src", src_hook
+        print "dest", dest_file
+        print "exists", exists
+
+        shutil.copy(src_hook, dest_file)
+
+        return result
 
     def delete_submission(self, gitolite_url):
         submission_db = self.mongo.gitsubmit.submissions
