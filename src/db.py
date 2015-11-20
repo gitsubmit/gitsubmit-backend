@@ -233,13 +233,13 @@ class DatabaseWrapper(object):
         # Make sure the owner exists
         gw.get_user_or_error(owner)
 
-        # Note: create_repo sets the repo ACCESS rights in gitolite
-        gw.create_repo(submission_full_git_url, owner)
-
-        # This is what actually causes the fork, though
+        # This is what actually causes the fork
         parent_project_full_git_url = parent_class_url + "/" + parent_project_url
         fork_callstring = "ssh git@" + self.ssh_host + " fork " + parent_project_full_git_url + " " + submission_full_git_url
         subprocess.call(fork_callstring, shell=True)
+
+        # now create_repo sets the repo ACCESS rights in gitolite
+        gw.create_repo(submission_full_git_url, owner)
 
         # If we got here, nothing went wrong, stuff it in the db
         submission_obj = {"gitolite_url": submission_full_git_url,
