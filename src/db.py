@@ -253,7 +253,7 @@ class DatabaseWrapper(object):
 
         result = submission_db.insert_one(submission_obj)
 
-        dest_dir = os.path.abspath(os.path.join(self.repo_root, submission_full_git_url))
+        dest_dir = os.path.abspath(os.path.join(self.repo_root, submission_full_git_url+".git"))
 
         exists = os.path.exists(dest_dir)
 
