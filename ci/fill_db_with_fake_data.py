@@ -38,7 +38,7 @@ if __name__ == "__main__":
 
     password = "verybadpw"
 
-    dbw = DatabaseWrapper(args.pyolite_location, port=args.mongo_port)
+    dbw = DatabaseWrapper(args.pyolite_location, port=args.mongo_port, repositories_root="/var/lib/jenkins/jobs/acceptance-tests/workspace/temp")
     gw = GitoliteWrapper(args.pyolite_location)
 
     # give one user a REAL pubkey, so git can interact with server

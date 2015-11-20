@@ -4,6 +4,9 @@ TEST_PATH=$(pwd)
 yes | rm -r temp || true
 mkdir temp
 mkdir temp/repositories
+mkdir -p temp/student1/submissions/turned_on_a_computer.git/hooks
+mkdir -p temp/student2/submissions/used_a_computer.git/hooks
+mkdir -p temp/student_usable/submissions/test_submission.git/hooks
 TEMP_PATH=$(readlink -f temp/)
 REPO_PATH=$(readlink -f temp/repositories)
 rmdir temp/repositories
@@ -70,11 +73,10 @@ git push
 
 # get back to where we were
 cd $TEST_PATH
-
-# shove some data in there
-python ci/fill_db_with_fake_data.py -p 27117 -pyo $GL_PATH
-
 cd src
+# shove some data in there
+python ../ci/fill_db_with_fake_data.py -p 27117 -pyo $GL_PATH
+
 # start a testing server on port 5555
 nohup /virtualenvs/gitsubmit_env/bin/gunicorn --access-logfile /srv/logs/staging_access.log -w 1 -b :5555 "app:configured_main('$GL_PATH', '$REPO_PATH', 27117)" &
 
