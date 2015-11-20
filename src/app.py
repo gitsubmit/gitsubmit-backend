@@ -371,7 +371,7 @@ def new_project_due_date(class_url, project_url):
 def make_submission(class_name, project_name):
     json_data = get_json_data()
     owner = json_data.get("owner")
-    url_name = project_name
+    url_name = class_name + "_" + project_name
     parent_url = class_name + '/' + project_name
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     try:
