@@ -12,6 +12,11 @@ User can log in
     Given testing webserver is running
     Then should get a token when logging in
 
+User can signup
+    [Tags]  api  database  users  signup
+    Given testing webserver is running
+    Then should get a token when signing up
+
 Can list user's SSH keys
     [Tags]  api  database  users  sshkeys
     Given testing webserver is running
@@ -92,6 +97,13 @@ Invalid user: empty
 *** Keywords ***
 should get a token when logging in
     ${obj}=  log known user in  ${ROOT_URL}
+    ${code}=  get from dictionary  ${obj}  status_code
+    should be equal as integers  ${code}  200
+    ${content}=  get from dictionary  ${obj}  data
+    dictionary should contain key  ${content}  token
+
+should get a token when logging in
+    ${obj}=  signup  known  user  ${ROOT_URL}
     ${code}=  get from dictionary  ${obj}  status_code
     should be equal as integers  ${code}  200
     ${content}=  get from dictionary  ${obj}  data

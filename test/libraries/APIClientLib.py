@@ -210,3 +210,6 @@ class APIClientLib(object):
         method_cb = requests.post
         signup_obj = {"username": username, "password": password, "email": email}
         return self.make_request(method_cb, url, signup_obj)
+
+    def signup_known_user(self, url_root):
+        return self.signup(url_root, "signuptestuser1", "signuptestpassword1", "signuptestemail1@gitsubmit.com")
