@@ -256,7 +256,7 @@ class DatabaseWrapper(object):
 
         exists = os.path.exists(dest_dir)
 
-        dest_file = os.path.join(dest_dir, "pre-receive")
+        dest_file = os.path.join(dest_dir, "hooks", "pre-receive")
         src_hook = os.path.abspath(os.path.join("src", "hooks", "pre-receive"))
 
         print "src", src_hook
