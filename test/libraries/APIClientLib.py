@@ -204,3 +204,9 @@ class APIClientLib(object):
         url = url_root + "/" + username + "/submissions/" + submission + "/"
         method_cb = requests.delete
         return self.make_request(method_cb, url)
+
+    def signup(self, url_root, username, password, email):
+        url = url_root + "/signup/"
+        method_cb = requests.post
+        signup_obj = {"username": username, "password": password, "email": email}
+        return self.make_request(method_cb, url, signup_obj)
