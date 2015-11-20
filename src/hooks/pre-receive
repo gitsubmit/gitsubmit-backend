@@ -49,4 +49,4 @@ else:
     print "Reminder: deadline is", deadline
     print "Today's date is:", datetime.datetime.now()
     print ""
-    sys.exit(1)
+    sys.exit(0)
