@@ -22,7 +22,9 @@ Should be able to read file ${file} from known repo
     ${code}=  get from dictionary  ${obj}  status_code
     should be equal as integers  ${code}  200
     ${headers}=  get from dictionary  ${obj}  headers
-    dictionary should not contain key  ${headers}  is_tree
+    dictionary should contain key  ${headers}  is_tree
+    ${tree}=  get from dictionary  ${headers}  is_tree
+    should not be equal  ${tree}  True
     ${content}=  get from dictionary  ${obj}  data
     should contain  ${content}  some data
 
@@ -32,6 +34,8 @@ Should be able to read directory ${directory} from known repo
     should be equal as integers  ${code}  200
     ${headers}=  get from dictionary  ${obj}  headers
     dictionary should contain key  ${headers}  is_tree
+    ${tree}=  get from dictionary  ${headers}  is_tree
+    should be equal  ${tree}  True
     ${content}=  get from dictionary  ${obj}  data
 
 Get filesystem from docker instance
