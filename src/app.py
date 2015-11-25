@@ -220,6 +220,8 @@ def new_class():
         return jsonify(class_created=url_name)
     except UrlNameAlreadyTakenError as e:
         return jsonify({"error": "Url name was already taken!", "exception": str(e)}), 403
+    except UserDoesNotExistError as e:
+        return jsonify({"error": "Sorry! You need to upload a public key in order to do this!", "exception": str(e)}), 400
 
 @app.route('/classes/<class_url>/', methods=["PUT"])
 def update_class_description(class_url):
@@ -290,7 +292,6 @@ def add_student(class_url):
     json_data = get_json_data()
     student = json_data.get("username")
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
-
     try:
         dbw.add_student_to_class(class_url, student)
     except ClassDoesNotExistError as e:
@@ -401,6 +402,8 @@ def make_submission(class_name, project_name):
         return jsonify({"error": "That project does not exist!", "exception": str(e)}), 404
     except ClassDoesNotExistError as e:
         return jsonify({"error": "Class does not exist!", "exception": str(e)}), 404
+    except UserDoesNotExistError as e:
+        return jsonify({"error": "Sorry! You need to upload a public key in order to do this!", "exception": str(e)}), 400
 
 
 @app.route('/<username>/submissions/<submission_name>/', methods=['GET', 'OPTIONS'])
