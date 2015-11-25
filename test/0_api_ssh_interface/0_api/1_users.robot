@@ -103,7 +103,7 @@ should get a token when logging in
     dictionary should contain key  ${content}  token
 
 should get a token when signing up
-    ${obj}=  signup known user
+    ${obj}=  signup known user  ${ROOT_URL}
     ${code}=  get from dictionary  ${obj}  status_code
     should be equal as integers  ${code}  200
 
