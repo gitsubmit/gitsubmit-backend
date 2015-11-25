@@ -107,13 +107,6 @@ should get a token when signing up
     ${code}=  get from dictionary  ${obj}  status_code
     should be equal as integers  ${code}  200
 
-should get a token when logging in
-    ${obj}=  signup  known  user  ${ROOT_URL}
-    ${code}=  get from dictionary  ${obj}  status_code
-    should be equal as integers  ${code}  200
-    ${content}=  get from dictionary  ${obj}  data
-    dictionary should contain key  ${content}  token
-
 Cannot remove key from ${user}
     ${keys_before}=  get number of keys for ${user}
     User removes first key of ${user} unsuccessfully
