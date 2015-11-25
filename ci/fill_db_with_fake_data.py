@@ -33,6 +33,7 @@ def convert_ssh_key_to_colon_string(key):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-p", "--mongo_port", help="the mongodb port to connect to", type=int)
+    parser.add_argument("-s", "--ssh_host", help="the ssh host string to connect to")
     parser.add_argument("-pyo", "--pyolite_location", help="the folder pyolite should bind to")
     args = parser.parse_args()
 
@@ -87,7 +88,7 @@ if __name__ == "__main__":
     dbw.create_project("test_project", "a test project", "description",
                        "test_class", False, (datetime.datetime.now() + datetime.timedelta(days=2)).strftime("%Y-%m-%d"), "teacher_usable")
 
-    dbw.ssh_host = "test_gitsubmit_repo_as_student"
+    dbw.ssh_host = args.ssh_host
     dbw.create_submission("turned_on_a_computer", "Student 1 turned on a computer", "intro_to_computers/turn_on_a_computer", "student1")
     dbw.create_submission("used_a_computer", "Student 2 used a computer", "adv_computers/use_a_computer", "student2")
     dbw.create_submission("test_submission", "a test submission", "test_class/test_project", "student_usable")
