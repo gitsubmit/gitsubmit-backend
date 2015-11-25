@@ -12,6 +12,11 @@ User can log in
     Given testing webserver is running
     Then should get a token when logging in
 
+User can signup
+    [Tags]  api  database  users  signup
+    Given testing webserver is running
+    Then should get a token when signing up
+
 Can list user's SSH keys
     [Tags]  api  database  users  sshkeys
     Given testing webserver is running
@@ -63,10 +68,42 @@ User has a landing page
     And user student2 is logged in
     Then Can get landing page for user "student2"
 
+Invalid email: empty
+    [Tags]  api  database  users  signup  email  invalid
+    Given testing webserver is running
+    Then should get 400 when signing up as "user" with password "validpassword" and email ""
+
+Invalid email: no '@' in email
+    [Tags]  api  database  users  signup  email  invalid
+    Given testing webserver is running
+    Then should get 400 when signing up as "user" with password "validpassword" and email "bademailatgitsubmit.com"
+
+Invalid password: empty
+    [Tags]  api  database  users  signup  password  invalid
+    Given testing webserver is running
+    Then should get 400 when signing up as "user" with password "" and email "email@gitsubmit.com"
+
+Invalid password: short
+    [Tags]  api  database  users  signup  password  invalid
+    Given testing webserver is running
+    Then should get 400 when signing up as "user" with password "1234567" and email "email@gitsubmit.com"
+
+Invalid user: empty
+    [Tags]  api  database  users  signup user  invalid
+    Given testing webserver is running
+    Then should get 400 when signing up as "" with password "validpassword" and email "email@gitsubmit.com"
+
 
 *** Keywords ***
 should get a token when logging in
     ${obj}=  log known user in  ${ROOT_URL}
+    ${code}=  get from dictionary  ${obj}  status_code
+    should be equal as integers  ${code}  200
+    ${content}=  get from dictionary  ${obj}  data
+    dictionary should contain key  ${content}  token
+
+should get a token when logging in
+    ${obj}=  signup  known  user  ${ROOT_URL}
     ${code}=  get from dictionary  ${obj}  status_code
     should be equal as integers  ${code}  200
     ${content}=  get from dictionary  ${obj}  data
@@ -184,3 +221,7 @@ Can get landing page for user "${user}"
     should be equal as integers  ${code}  200
 
 
+should get 400 when signing up as "${user}" with password "${password}" and email "${email}"
+    ${obj}=  signup  ${ROOT_URL}  ${user}  ${password}  ${email}
+    ${code}=  get from dictionary  ${obj}  status_code
+    should be equal as integers ${code} 400
