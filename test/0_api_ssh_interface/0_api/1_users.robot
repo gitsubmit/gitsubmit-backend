@@ -224,4 +224,4 @@ Can get landing page for user "${user}"
 should get 400 when signing up as "${user}" with password "${password}" and email "${email}"
     ${obj}=  signup  ${ROOT_URL}  ${user}  ${password}  ${email}
     ${code}=  get from dictionary  ${obj}  status_code
-    should be equal as integers ${code} 400
+    should be equal as integers  ${code}  400
