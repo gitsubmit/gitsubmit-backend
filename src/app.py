@@ -163,9 +163,11 @@ def signup():
     password = json_data.get("password")
     email = json_data.get("email")
     if '@' not in parseaddr(email)[1]:
-        return jsonify({"error": "Invalid email address: "+str(email)})
+        return jsonify({"error": "Invalid email address: "+str(email)}), 400
     if len(password) < 8:
-        return jsonify({"error": "Invalid password; must be 8 characters or more"})
+        return jsonify({"error": "Invalid password: must be 8 characters or more"}), 400
+    if len(username) < 1:
+        return jsonify({"error": "Invalid username: cannot use an empty username"}), 400
     first_name = json_data.get("firstname")
     last_name = json_data.get("lastname")
 

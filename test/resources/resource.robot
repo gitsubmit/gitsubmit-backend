@@ -25,5 +25,4 @@ testing webserver is running
     # lol gherkin
 
 user ${user} is logged in
-    no operation
-    # TODO: this
+    log in  ${ROOT_URL}  ${user}  verybadpw

@@ -102,12 +102,10 @@ should get a token when logging in
     ${content}=  get from dictionary  ${obj}  data
     dictionary should contain key  ${content}  token
 
-should get a token when logging in
-    ${obj}=  signup  known  user  ${ROOT_URL}
+should get a token when signing up
+    ${obj}=  signup known user  ${ROOT_URL}
     ${code}=  get from dictionary  ${obj}  status_code
     should be equal as integers  ${code}  200
-    ${content}=  get from dictionary  ${obj}  data
-    dictionary should contain key  ${content}  token
 
 Cannot remove key from ${user}
     ${keys_before}=  get number of keys for ${user}
@@ -224,4 +222,4 @@ Can get landing page for user "${user}"
 should get 400 when signing up as "${user}" with password "${password}" and email "${email}"
     ${obj}=  signup  ${ROOT_URL}  ${user}  ${password}  ${email}
     ${code}=  get from dictionary  ${obj}  status_code
-    should be equal as integers ${code} 400
+    should be equal as integers  ${code}  400

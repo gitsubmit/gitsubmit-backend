@@ -16,7 +16,13 @@ class APIClientLib(object):
         if data:
             print "sending data: "
             print data
-        result = method_callback(url, json=data)
+        if hasattr(self, "token"):
+            h = {"Authorization": "Bearer "+str(self.token)}
+            print "sending with headers: "
+            print h
+            result = method_callback(url, json=data, headers=h)
+        else:
+            result = method_callback(url, json=data)
         print "raw result:"
         print result.status_code
         print result.headers
@@ -32,6 +38,14 @@ class APIClientLib(object):
         print "data retrieved: "
         print return_obj
         return return_obj
+
+    def log_in(self, url_root, user, password):
+        url = url_root + "/login/"
+        method_cb = requests.post
+        result = self.make_request(method_cb, url, {"username": user, "password": password})
+        self.token = result["data"]["token"]
+        return result
+
 
     def log_known_user_in(self, url_root):
         url = url_root + "/login/"
@@ -125,7 +139,7 @@ class APIClientLib(object):
         return self.make_request(method_cb, url, class_obj)
 
     def get_submission_individually(self, url_root, owner, submission):
-        url = url_root+"/" + owner + "/submissions/" + submission
+        url = url_root+"/" + owner + "/submissions/" + submission + "/"
         method_cb = requests.get
         return self.make_request(method_cb, url)
 
