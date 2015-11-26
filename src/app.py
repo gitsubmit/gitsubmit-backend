@@ -224,6 +224,7 @@ def new_class():
         return jsonify({"error": "Sorry! You need to upload a public key in order to do this!", "exception": str(e)}), 400
 
 @app.route('/classes/<class_url>/', methods=["PUT"])
+@crossdomain(app=app, origin='*')
 def update_class_description(class_url):
     dbw = DatabaseWrapper(GITOLITE_ADMIN_PATH, DATABASE_PORT)
     new_description = request.form.get("description")
